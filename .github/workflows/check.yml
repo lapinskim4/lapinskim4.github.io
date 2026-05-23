@@ -1,0 +1,35 @@
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  links:
+    name: Link check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --verbose --max-concurrency 4 './**/*.html'
+          fail: true
+
+  smoke:
+    name: Smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        working-directory: tests
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+      - name: Run smoke test
+        working-directory: tests
+        run: node smoke.mjs
