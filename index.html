@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>lapinskim4</title>
   <meta name="description" content="Personal site of lapinskim4.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A6</text></svg>">
+  <link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A6</text></svg>">
   <style>
     :root {
       --bg: #0f1115;
@@ -14,6 +14,7 @@
       --accent: #7cc4ff;
       --card: #161922;
       --border: #232838;
+      --badge-bg: rgba(124, 196, 255, 0.15);
     }
     @media (prefers-color-scheme: light) {
       :root {
@@ -23,6 +24,7 @@
         --accent: #1769c4;
         --card: #ffffff;
         --border: #e6e8ee;
+        --badge-bg: rgba(23, 105, 196, 0.12);
       }
     }
     * { box-sizing: border-box; }
@@ -67,7 +69,7 @@
       margin-bottom: 1rem;
     }
     section h2 {
-      margin: 0 0 0.5rem;
+      margin: 0 0 0.75rem;
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -97,6 +99,41 @@
       color: var(--accent);
       transform: translateY(-1px);
     }
+    ul.projects {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+    .project {
+      padding: 0.9rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .project-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .project-title { font-weight: 600; }
+    .badge {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: var(--badge-bg);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0.35rem 0 0;
+    }
     footer {
       text-align: center;
       color: var(--muted);
@@ -122,9 +159,23 @@
     </section>
 
     <section>
+      <h2>Projects</h2>
+      <ul class="projects">
+        <li class="project">
+          <div class="project-header">
+            <span class="project-title">Personal site</span>
+            <span class="badge">In progress</span>
+          </div>
+          <p class="project-desc">This page — being iterated on. Custom domain, projects, and a living favicon are on the way.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section>
       <h2>Links</h2>
       <ul class="links">
-        <li><a href="https://github.com/lapinskim4">GitHub</a></li>
+        <li><a href="https://github.com/lapinskim4" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/mlapinski/" target="_blank" rel="noopener">LinkedIn</a></li>
       </ul>
     </section>
 
@@ -132,5 +183,159 @@
       Built with plain HTML &amp; hosted on <a href="https://pages.github.com/">GitHub Pages</a>.
     </footer>
   </main>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+    const SIZE = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = SIZE;
+    canvas.height = SIZE;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(SIZE, SIZE, false);
+    renderer.setClearColor(0x000000, 0);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.z = 3;
+
+    // Starfield backdrop
+    const starsGeom = new THREE.BufferGeometry();
+    const starCount = 80;
+    const starPositions = new Float32Array(starCount * 3);
+    const starPhases = new Float32Array(starCount);
+    for (let i = 0; i < starCount; i++) {
+      starPositions[i * 3]     = (Math.random() - 0.5) * 6;
+      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 6;
+      starPositions[i * 3 + 2] = (Math.random() - 0.5) * 4 - 1;
+      starPhases[i] = Math.random() * Math.PI * 2;
+    }
+    starsGeom.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starsGeom.setAttribute('phase', new THREE.BufferAttribute(starPhases, 1));
+
+    const starsMat = new THREE.ShaderMaterial({
+      uniforms: { time: { value: 0 } },
+      transparent: true,
+      depthWrite: false,
+      vertexShader: `
+        attribute float phase;
+        uniform float time;
+        varying float vTwinkle;
+        void main() {
+          vTwinkle = 0.5 + 0.5 * sin(time * 2.0 + phase);
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = 1.6 + vTwinkle * 1.4;
+          gl_Position = projectionMatrix * mv;
+        }
+      `,
+      fragmentShader: `
+        varying float vTwinkle;
+        void main() {
+          vec2 c = gl_PointCoord - 0.5;
+          float d = length(c);
+          if (d > 0.5) discard;
+          float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6);
+          gl_FragColor = vec4(1.0, 0.95, 1.0, a);
+        }
+      `
+    });
+    const stars = new THREE.Points(starsGeom, starsMat);
+    scene.add(stars);
+
+    // The "brain" — wireframe icosahedron with cosmic iridescence
+    const brainGeom = new THREE.IcosahedronGeometry(1, 1);
+    const brainMat = new THREE.ShaderMaterial({
+      uniforms: { time: { value: 0 } },
+      wireframe: true,
+      transparent: true,
+      vertexShader: `
+        varying vec3 vPos;
+        uniform float time;
+        void main() {
+          vPos = position;
+          float pulse = 1.0 + 0.08 * sin(time * 2.5);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position * pulse, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vPos;
+        uniform float time;
+        void main() {
+          float h = 0.5 + 0.5 * sin(time * 1.3 + vPos.x * 2.0 + vPos.y * 1.5);
+          vec3 nebulaA = vec3(0.55, 0.25, 1.00); // violet
+          vec3 nebulaB = vec3(0.20, 0.70, 1.00); // azure
+          vec3 nebulaC = vec3(1.00, 0.40, 0.85); // magenta
+          float m = 0.5 + 0.5 * sin(time * 0.7);
+          vec3 col = mix(mix(nebulaA, nebulaB, h), nebulaC, m * 0.6);
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `
+    });
+    const brain = new THREE.Mesh(brainGeom, brainMat);
+    scene.add(brain);
+
+    // Glowing inner core for depth
+    const coreGeom = new THREE.IcosahedronGeometry(0.55, 0);
+    const coreMat = new THREE.ShaderMaterial({
+      uniforms: { time: { value: 0 } },
+      transparent: true,
+      depthWrite: false,
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        uniform float time;
+        void main() {
+          float fres = pow(1.0 - max(0.0, vNormal.z), 2.0);
+          vec3 glow = mix(vec3(0.45, 0.20, 0.95), vec3(0.20, 0.55, 1.0), 0.5 + 0.5 * sin(time));
+          gl_FragColor = vec4(glow, fres * 0.55);
+        }
+      `
+    });
+    const core = new THREE.Mesh(coreGeom, coreMat);
+    scene.add(core);
+
+    // Hook favicon
+    const link = document.getElementById('favicon');
+    const clock = new THREE.Clock();
+    const UPDATE_INTERVAL = 1000 / 15; // 15 fps for the favicon update
+    let lastUpdate = 0;
+    let visible = true;
+    document.addEventListener('visibilitychange', () => {
+      visible = !document.hidden;
+      if (visible) clock.start();
+    });
+
+    function animate(now) {
+      if (!visible) {
+        requestAnimationFrame(animate);
+        return;
+      }
+      const t = clock.getElapsedTime();
+      brainMat.uniforms.time.value = t;
+      coreMat.uniforms.time.value = t;
+      starsMat.uniforms.time.value = t;
+      brain.rotation.y = t * 0.6;
+      brain.rotation.x = t * 0.3;
+      core.rotation.y = -t * 0.4;
+      core.rotation.z = t * 0.25;
+      stars.rotation.y = t * 0.04;
+
+      renderer.render(scene, camera);
+
+      if (now - lastUpdate > UPDATE_INTERVAL) {
+        link.href = canvas.toDataURL('image/png');
+        lastUpdate = now;
+      }
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+  </script>
 </body>
 </html>
