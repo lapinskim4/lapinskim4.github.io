@@ -14,7 +14,7 @@ jobs:
       - name: Check links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --verbose --max-concurrency 4 './**/*.html'
+          args: --no-progress --verbose './**/*.html'
           fail: true
 
   smoke:
