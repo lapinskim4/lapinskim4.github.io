@@ -41,32 +41,27 @@ const errors = [];
 
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
 
-const pages = ['/', '/uses.html'];
+let response;
+try {
+  response = await page.goto(`http://localhost:${PORT}/`, {
+    waitUntil: 'load',
+    timeout: 15000,
+  });
+} catch (e) {
+  errors.push(`navigation failed: ${e.message}`);
+}
 
-for (const path of pages) {
-  let response;
-  try {
-    response = await page.goto(`http://localhost:${PORT}${path}`, {
-      waitUntil: 'load',
-      timeout: 15000,
-    });
-  } catch (e) {
-    errors.push(`[${path}] navigation failed: ${e.message}`);
-    continue;
-  }
+if (response && !response.ok()) {
+  errors.push(`page returned status ${response.status()}`);
+}
 
-  if (response && !response.ok()) {
-    errors.push(`[${path}] page returned status ${response.status()}`);
-  }
+await page.waitForTimeout(2000);
 
-  await page.waitForTimeout(2000);
-
-  const h1 = await page.locator('h1').first().textContent().catch(() => null);
-  if (!h1 || !h1.trim()) {
-    errors.push(`[${path}] h1 not found or empty`);
-  } else {
-    console.log(`[${path}] h1: "${h1.trim()}"`);
-  }
+const h1 = await page.locator('h1').first().textContent().catch(() => null);
+if (!h1 || !h1.trim()) {
+  errors.push('h1 not found or empty');
+} else {
+  console.log(`h1: "${h1.trim()}"`);
 }
 
 await browser.close();

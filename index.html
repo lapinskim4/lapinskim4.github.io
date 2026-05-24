@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Martin</title>
-  <meta name="description" content="Personal site of Martin — security, AI, home-lab tinkering.">
+  <title>lapinskim4</title>
+  <meta name="description" content="Public projects from lapinskim4 — open-source tooling, security experiments, and shader playgrounds.">
   <link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A6</text></svg>">
   <link rel="stylesheet" href="style.css">
   <script>
@@ -33,90 +33,53 @@
 
   <main>
     <header class="hero">
-      <div class="portrait" aria-hidden="true">
-        <canvas id="brain-canvas"></canvas>
-        <img class="portrait-img" src="assets/martin-now.jpg" alt="" data-portrait="now">
-        <img class="portrait-img" src="assets/martin-then.jpg" alt="" data-portrait="then">
-      </div>
-      <div class="hero-text">
-        <h1>Martin</h1>
-        <p class="tagline">Hi — this is my corner of the web.</p>
+      <button id="cosmic" class="cosmic" aria-label="Click for fullscreen cosmic view" title="Click for fullscreen">
+        <canvas id="brain-canvas" aria-hidden="true"></canvas>
+      </button>
+      <div>
+        <h1>lapinskim4</h1>
+        <p class="tagline">Open-source projects, security experiments, and other things worth shipping in public.</p>
       </div>
     </header>
-
-    <section class="reveal">
-      <h2>About</h2>
-      <p>I tinker with security and AI — usually at the same time. Right now I&rsquo;m building out tooling that puts an LLM at the center of an offensive security workflow.</p>
-    </section>
-
-    <div class="bento">
-      <section class="reveal">
-        <h2>Now</h2>
-        <p>Cooking on the <strong>seclayer.top</strong> app — a Docker stack with an LLM core and modular security-testing components.</p>
-        <span class="now-meta">Last updated May 2026</span>
-      </section>
-
-      <section class="reveal">
-        <h2>Stack</h2>
-        <ul class="stack">
-          <li>Docker</li>
-          <li>LLMs</li>
-          <li>Python</li>
-          <li>Linux</li>
-          <li>Offensive security</li>
-          <li>Home lab</li>
-        </ul>
-      </section>
-    </div>
 
     <section class="reveal">
       <h2>Projects</h2>
       <ul class="cards">
         <li class="card">
-          <div class="card-header">
-            <span class="card-title">seclayer (the app)</span>
-            <span class="badge">Cooking</span>
+          <div class="card-row">
+            <div class="card-glyph" aria-hidden="true"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">lapinskim4.github.io</span>
+                <span class="badge">Live</span>
+              </div>
+              <p class="card-desc">The source of this site. Vanilla HTML/CSS, three.js, GitHub Pages. Fork it for your own landing.</p>
+              <a class="card-link" href="https://github.com/lapinskim4/lapinskim4.github.io" target="_blank" rel="noopener">View source &rarr;</a>
+            </div>
           </div>
-          <p class="card-desc">A self-hosted, LLM-driven security testing platform. Modular, containerized, runs in my lab.</p>
         </li>
         <li class="card">
-          <div class="card-header">
-            <span class="card-title">Personal site</span>
-            <span class="badge">In progress</span>
+          <div class="card-row">
+            <div class="card-glyph" data-hue="muted" aria-hidden="true"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">More on the way</span>
+                <span class="badge badge-muted">Soon</span>
+              </div>
+              <p class="card-desc">Security tooling and small experiments. Public releases land here as they happen.</p>
+            </div>
           </div>
-          <p class="card-desc">This page. Plain HTML, living favicon, GitHub Pages. Easy to extend.</p>
         </li>
       </ul>
     </section>
 
-    <section class="reveal">
-      <h2>Writeups</h2>
-      <ul class="cards">
-        <li class="card">
-          <div class="card-header">
-            <span class="card-title">Writeups coming soon</span>
-            <span class="badge">WIP</span>
-          </div>
-          <p class="card-desc">Notes from the seclayer build, home-lab tinkering, and whatever else seems worth sharing.</p>
-        </li>
-      </ul>
-    </section>
-
-    <section class="reveal">
-      <h2>Links</h2>
-      <ul class="links">
-        <li><a href="mailto:lapinskim@protonmail.ch">Email</a></li>
-        <li><a href="https://github.com/lapinskim4" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://x.com/secLayer" target="_blank" rel="noopener">X / @secLayer</a></li>
-        <li><a href="https://www.linkedin.com/in/mlapinski/" target="_blank" rel="noopener">LinkedIn</a></li>
-      </ul>
+    <section class="reveal status">
+      <h2>Currently</h2>
+      <p>Heads-down on a private security project. Public stuff lands here when it&rsquo;s ready to leave the workbench.</p>
     </section>
 
     <footer class="reveal">
-      <div class="nav">
-        <a href="uses.html">/uses</a>
-      </div>
-      <div>Built with plain HTML &amp; hosted on <a href="https://pages.github.com/">GitHub Pages</a>.</div>
+      <div><a href="https://github.com/lapinskim4" target="_blank" rel="noopener">github.com/lapinskim4</a></div>
     </footer>
   </main>
 
@@ -131,7 +94,7 @@
       if (visible) clock.start();
     });
 
-    const BRAIN_SIZE = 128;
+    const BRAIN_SIZE = 256;
     const brainCanvas = document.getElementById('brain-canvas');
     brainCanvas.width = BRAIN_SIZE;
     brainCanvas.height = BRAIN_SIZE;
@@ -145,7 +108,7 @@
     brainCamera.position.z = 3;
 
     const starsGeom = new THREE.BufferGeometry();
-    const starCount = 80;
+    const starCount = 120;
     const starPositions = new Float32Array(starCount * 3);
     const starPhases = new Float32Array(starCount);
     for (let i = 0; i < starCount; i++) {
@@ -161,7 +124,7 @@
       uniforms: { time: { value: 0 } },
       transparent: true,
       depthWrite: false,
-      vertexShader: `attribute float phase; uniform float time; varying float vTwinkle; void main() { vTwinkle = 0.5 + 0.5 * sin(time * 2.0 + phase); vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = 1.6 + vTwinkle * 1.4; gl_Position = projectionMatrix * mv; }`,
+      vertexShader: `attribute float phase; uniform float time; varying float vTwinkle; void main() { vTwinkle = 0.5 + 0.5 * sin(time * 2.0 + phase); vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = 2.0 + vTwinkle * 1.8; gl_Position = projectionMatrix * mv; }`,
       fragmentShader: `varying float vTwinkle; void main() { vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) discard; float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6); gl_FragColor = vec4(1.0, 0.95, 1.0, a); }`
     });
     const stars = new THREE.Points(starsGeom, starsMat);
@@ -215,11 +178,32 @@
     resizeBackdrop();
     window.addEventListener('resize', resizeBackdrop);
 
+    const cosmic = document.getElementById('cosmic');
+    cosmic.addEventListener('click', () => {
+      cosmic.classList.toggle('fullscreen');
+      const isFull = cosmic.classList.contains('fullscreen');
+      const size = isFull
+        ? Math.min(Math.max(window.innerWidth, window.innerHeight), 1024)
+        : BRAIN_SIZE;
+      brainCanvas.width = size;
+      brainCanvas.height = size;
+      brainRenderer.setSize(size, size, false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && cosmic.classList.contains('fullscreen')) {
+        cosmic.click();
+      }
+    });
+
     const faviconLink = document.getElementById('favicon');
     const FAVICON_INTERVAL = 1000 / 15;
     const BACKDROP_INTERVAL = 1000 / 30;
     let lastFavicon = 0;
     let lastBackdrop = 0;
+    const favCanvas = document.createElement('canvas');
+    favCanvas.width = 64;
+    favCanvas.height = 64;
+    const favCtx = favCanvas.getContext('2d');
 
     function tick(now) {
       if (!visible) { requestAnimationFrame(tick); return; }
@@ -233,8 +217,11 @@
       core.rotation.z = t * 0.25;
       stars.rotation.y = t * 0.04;
       brainRenderer.render(brainScene, brainCamera);
+
       if (now - lastFavicon > FAVICON_INTERVAL) {
-        faviconLink.href = brainCanvas.toDataURL('image/png');
+        favCtx.clearRect(0, 0, 64, 64);
+        favCtx.drawImage(brainCanvas, 0, 0, 64, 64);
+        faviconLink.href = favCanvas.toDataURL('image/png');
         lastFavicon = now;
       }
       if (now - lastBackdrop > BACKDROP_INTERVAL) {
@@ -249,7 +236,8 @@
       brainRenderer.render(brainScene, brainCamera);
       backdropMat.uniforms.time.value = 0;
       backdropRenderer.render(backdropScene, backdropCamera);
-      faviconLink.href = brainCanvas.toDataURL('image/png');
+      favCtx.drawImage(brainCanvas, 0, 0, 64, 64);
+      faviconLink.href = favCanvas.toDataURL('image/png');
     } else {
       requestAnimationFrame(tick);
     }
@@ -285,30 +273,21 @@
       reveals.forEach((el) => el.classList.add('in-view'));
     }
 
-    const portraitImgs = Array.from(document.querySelectorAll('.portrait-img'));
-    Promise.all(portraitImgs.map((img) =>
-      new Promise((resolve) => {
-        if (img.complete) {
-          resolve(img.naturalWidth > 0 ? img : null);
-        } else {
-          img.addEventListener('load', () => resolve(img), { once: true });
-          img.addEventListener('error', () => resolve(null), { once: true });
-        }
-      })
-    )).then((results) => {
-      const loaded = results.filter(Boolean);
-      if (loaded.length === 0) return;
-      loaded[0].classList.add('active');
-      if (loaded.length < 2) return;
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduced) return;
-      let active = 0;
-      setInterval(() => {
-        loaded[active].classList.remove('active');
-        active = (active + 1) % loaded.length;
-        loaded[active].classList.add('active');
-      }, 6000);
-    });
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (canHover && motionOK) {
+      document.querySelectorAll('.card').forEach((card) => {
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5;
+          const y = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = `perspective(700px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg) translateZ(0)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+    }
   </script>
 </body>
 </html>
