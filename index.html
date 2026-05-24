@@ -17,6 +17,14 @@
       } catch (e) {}
     })();
   </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
   <canvas id="backdrop" class="backdrop" aria-hidden="true"></canvas>
@@ -84,7 +92,11 @@
   </main>
 
   <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import * as THREE from 'three';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const clock = new THREE.Clock();
@@ -99,16 +111,18 @@
     brainCanvas.width = BRAIN_SIZE;
     brainCanvas.height = BRAIN_SIZE;
 
-    const brainRenderer = new THREE.WebGLRenderer({ canvas: brainCanvas, alpha: true, antialias: true });
+    const brainRenderer = new THREE.WebGLRenderer({ canvas: brainCanvas, antialias: true });
     brainRenderer.setSize(BRAIN_SIZE, BRAIN_SIZE, false);
-    brainRenderer.setClearColor(0x000000, 0);
+    brainRenderer.setClearColor(0x050010, 1);
+    brainRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    brainRenderer.toneMappingExposure = 1.1;
 
     const brainScene = new THREE.Scene();
     const brainCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     brainCamera.position.z = 3;
 
     const starsGeom = new THREE.BufferGeometry();
-    const starCount = 120;
+    const starCount = 160;
     const starPositions = new Float32Array(starCount * 3);
     const starPhases = new Float32Array(starCount);
     for (let i = 0; i < starCount; i++) {
@@ -125,7 +139,7 @@
       transparent: true,
       depthWrite: false,
       vertexShader: `attribute float phase; uniform float time; varying float vTwinkle; void main() { vTwinkle = 0.5 + 0.5 * sin(time * 2.0 + phase); vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = 2.0 + vTwinkle * 1.8; gl_Position = projectionMatrix * mv; }`,
-      fragmentShader: `varying float vTwinkle; void main() { vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) discard; float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6); gl_FragColor = vec4(1.0, 0.95, 1.0, a); }`
+      fragmentShader: `varying float vTwinkle; void main() { vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) discard; float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6); gl_FragColor = vec4(1.2, 1.1, 1.3, a); }`
     });
     const stars = new THREE.Points(starsGeom, starsMat);
     brainScene.add(stars);
@@ -136,7 +150,7 @@
       wireframe: true,
       transparent: true,
       vertexShader: `varying vec3 vPos; uniform float time; void main() { vPos = position; float pulse = 1.0 + 0.08 * sin(time * 2.5); gl_Position = projectionMatrix * modelViewMatrix * vec4(position * pulse, 1.0); }`,
-      fragmentShader: `varying vec3 vPos; uniform float time; void main() { float h = 0.5 + 0.5 * sin(time * 1.3 + vPos.x * 2.0 + vPos.y * 1.5); vec3 nebulaA = vec3(0.55, 0.25, 1.00); vec3 nebulaB = vec3(0.20, 0.70, 1.00); vec3 nebulaC = vec3(1.00, 0.40, 0.85); float m = 0.5 + 0.5 * sin(time * 0.7); vec3 col = mix(mix(nebulaA, nebulaB, h), nebulaC, m * 0.6); gl_FragColor = vec4(col, 1.0); }`
+      fragmentShader: `varying vec3 vPos; uniform float time; void main() { float h = 0.5 + 0.5 * sin(time * 1.3 + vPos.x * 2.0 + vPos.y * 1.5); vec3 nebulaA = vec3(0.85, 0.40, 1.55); vec3 nebulaB = vec3(0.30, 1.05, 1.50); vec3 nebulaC = vec3(1.50, 0.60, 1.30); float m = 0.5 + 0.5 * sin(time * 0.7); vec3 col = mix(mix(nebulaA, nebulaB, h), nebulaC, m * 0.6); gl_FragColor = vec4(col, 1.0); }`
     });
     const brain = new THREE.Mesh(brainGeom, brainMat);
     brainScene.add(brain);
@@ -147,10 +161,22 @@
       transparent: true,
       depthWrite: false,
       vertexShader: `varying vec3 vNormal; void main() { vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-      fragmentShader: `varying vec3 vNormal; uniform float time; void main() { float fres = pow(1.0 - max(0.0, vNormal.z), 2.0); vec3 glow = mix(vec3(0.45, 0.20, 0.95), vec3(0.20, 0.55, 1.0), 0.5 + 0.5 * sin(time)); gl_FragColor = vec4(glow, fres * 0.55); }`
+      fragmentShader: `varying vec3 vNormal; uniform float time; void main() { float fres = pow(1.0 - max(0.0, vNormal.z), 2.0); vec3 glow = mix(vec3(0.70, 0.30, 1.40), vec3(0.30, 0.80, 1.50), 0.5 + 0.5 * sin(time)); gl_FragColor = vec4(glow, fres * 0.65); }`
     });
     const core = new THREE.Mesh(coreGeom, coreMat);
     brainScene.add(core);
+
+    const composer = new EffectComposer(brainRenderer);
+    composer.setSize(BRAIN_SIZE, BRAIN_SIZE);
+    composer.addPass(new RenderPass(brainScene, brainCamera));
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(BRAIN_SIZE, BRAIN_SIZE),
+      0.95,
+      0.45,
+      0.20
+    );
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
 
     const backdrop = document.getElementById('backdrop');
     const backdropRenderer = new THREE.WebGLRenderer({ canvas: backdrop, antialias: false, alpha: false });
@@ -188,12 +214,23 @@
       brainCanvas.width = size;
       brainCanvas.height = size;
       brainRenderer.setSize(size, size, false);
+      composer.setSize(size, size);
+      bloomPass.setSize(size, size);
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && cosmic.classList.contains('fullscreen')) {
         cosmic.click();
       }
     });
+
+    let targetX = 0, targetY = 0;
+    let parX = 0, parY = 0;
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !reducedMotion) {
+      window.addEventListener('mousemove', (e) => {
+        targetX = (e.clientX / window.innerWidth - 0.5) * 0.45;
+        targetY = (e.clientY / window.innerHeight - 0.5) * 0.3;
+      });
+    }
 
     const faviconLink = document.getElementById('favicon');
     const FAVICON_INTERVAL = 1000 / 15;
@@ -208,15 +245,20 @@
     function tick(now) {
       if (!visible) { requestAnimationFrame(tick); return; }
       const t = clock.getElapsedTime();
+
+      parX += (targetX - parX) * 0.06;
+      parY += (targetY - parY) * 0.06;
+
       brainMat.uniforms.time.value = t;
       coreMat.uniforms.time.value = t;
       starsMat.uniforms.time.value = t;
-      brain.rotation.y = t * 0.6;
-      brain.rotation.x = t * 0.3;
-      core.rotation.y = -t * 0.4;
+      brain.rotation.y = t * 0.6 + parX;
+      brain.rotation.x = t * 0.3 + parY;
+      core.rotation.y = -t * 0.4 + parX * 0.5;
       core.rotation.z = t * 0.25;
-      stars.rotation.y = t * 0.04;
-      brainRenderer.render(brainScene, brainCamera);
+      stars.rotation.y = t * 0.04 + parX * 0.2;
+
+      composer.render();
 
       if (now - lastFavicon > FAVICON_INTERVAL) {
         favCtx.clearRect(0, 0, 64, 64);
@@ -233,7 +275,7 @@
     }
 
     if (reducedMotion) {
-      brainRenderer.render(brainScene, brainCamera);
+      composer.render();
       backdropMat.uniforms.time.value = 0;
       backdropRenderer.render(backdropScene, backdropCamera);
       favCtx.drawImage(brainCanvas, 0, 0, 64, 64);
