@@ -81,7 +81,7 @@ body {
   height: 100%;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.45;
   transition: opacity 0.4s;
 }
 
