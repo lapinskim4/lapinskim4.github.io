@@ -152,16 +152,19 @@ a { color: var(--accent); }
 
 h1 {
   margin: 0;
-  font-size: 2.4rem;
-  letter-spacing: -0.02em;
-  font-weight: 700;
+  font-size: clamp(2.6rem, 5vw, 3.4rem);
+  letter-spacing: -0.028em;
+  font-weight: 800;
+  line-height: 1.05;
+  text-shadow: 0 0 30px rgba(124, 80, 255, 0.32);
 }
 
 .tagline {
   color: var(--muted);
-  margin: 0;
-  font-size: 1.02rem;
-  max-width: 30rem;
+  margin: 0.5rem 0 0;
+  font-size: 1.06rem;
+  max-width: 32rem;
+  letter-spacing: -0.005em;
 }
 
 section {

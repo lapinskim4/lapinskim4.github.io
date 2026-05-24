@@ -166,8 +166,6 @@
     const core = new THREE.Mesh(coreGeom, coreMat);
     brainScene.add(core);
 
-    // Iridescent skin: solid icosahedron just inside the wireframe.
-    // Cosine-palette + fresnel gives oil-on-water color shifts at silhouette edges.
     const skinGeom = new THREE.IcosahedronGeometry(0.92, 2);
     const skinMat = new THREE.ShaderMaterial({
       uniforms: { time: { value: 0 } },
@@ -180,7 +178,6 @@
     const skin = new THREE.Mesh(skinGeom, skinMat);
     brainScene.add(skin);
 
-    // Outer particle shell: cosmic dust orbiting the wireframe at varying radii.
     const shellGeom = new THREE.BufferGeometry();
     const shellCount = 60;
     const shellPositions = new Float32Array(shellCount * 3);
@@ -213,9 +210,9 @@
     composer.addPass(new RenderPass(brainScene, brainCamera));
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(BRAIN_SIZE, BRAIN_SIZE),
-      0.65, // strength
-      0.30, // radius
-      0.28  // threshold
+      0.65,
+      0.30,
+      0.28
     );
     composer.addPass(bloomPass);
     composer.addPass(new OutputPass());
@@ -274,6 +271,16 @@
       });
     }
 
+    // Scroll-driven camera dolly: pushes in and tilts as you scroll the first viewport.
+    let scrollTarget = 0;
+    let scrollEased = 0;
+    function updateScrollTarget() {
+      scrollTarget = Math.min(1, Math.max(0, window.scrollY / window.innerHeight));
+    }
+    updateScrollTarget();
+    window.addEventListener('scroll', updateScrollTarget, { passive: true });
+    window.addEventListener('resize', updateScrollTarget);
+
     const faviconLink = document.getElementById('favicon');
     const FAVICON_INTERVAL = 1000 / 15;
     const BACKDROP_INTERVAL = 1000 / 30;
@@ -290,6 +297,10 @@
 
       parX += (targetX - parX) * 0.06;
       parY += (targetY - parY) * 0.06;
+      scrollEased += (scrollTarget - scrollEased) * 0.08;
+      brainCamera.position.z = 3 - scrollEased * 0.7;
+      brainCamera.position.y = -scrollEased * 0.25;
+      brainCamera.lookAt(0, 0, 0);
 
       brainMat.uniforms.time.value = t;
       coreMat.uniforms.time.value = t;
