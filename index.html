@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>lapinskim4</title>
-  <meta name="description" content="Personal site of lapinskim4.">
+  <title>Martin</title>
+  <meta name="description" content="Personal site of Martin.">
   <link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A6</text></svg>">
   <style>
     :root {
@@ -51,13 +51,15 @@
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), #b07cff);
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #fff;
+      background: radial-gradient(circle at 30% 30%, #1a1438 0%, #050010 75%);
       flex-shrink: 0;
+      overflow: hidden;
+      box-shadow: 0 0 16px rgba(124, 80, 255, 0.25);
+    }
+    #brain-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
     h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.01em; }
     .tagline { color: var(--muted); margin: 0.15rem 0 0; font-size: 0.95rem; }
@@ -146,9 +148,11 @@
 <body>
   <main>
     <header>
-      <div class="avatar" aria-hidden="true">L</div>
+      <div class="avatar" aria-hidden="true">
+        <canvas id="brain-canvas"></canvas>
+      </div>
       <div>
-        <h1>lapinskim4</h1>
+        <h1>Martin</h1>
         <p class="tagline">Hi — this is my corner of the web.</p>
       </div>
     </header>
@@ -187,13 +191,14 @@
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-    const SIZE = 64;
-    const canvas = document.createElement('canvas');
-    canvas.width = SIZE;
-    canvas.height = SIZE;
+    // Render at 2x the displayed size for crispness on retina displays.
+    const RENDER_SIZE = 128;
+    const canvas = document.getElementById('brain-canvas');
+    canvas.width = RENDER_SIZE;
+    canvas.height = RENDER_SIZE;
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(SIZE, SIZE, false);
+    renderer.setSize(RENDER_SIZE, RENDER_SIZE, false);
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
