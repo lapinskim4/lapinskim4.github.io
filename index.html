@@ -19,6 +19,8 @@
   </script>
 </head>
 <body>
+  <canvas id="backdrop" class="backdrop" aria-hidden="true"></canvas>
+
   <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="4"/>
@@ -30,11 +32,13 @@
   </button>
 
   <main>
-    <header class="page">
-      <div class="avatar" aria-hidden="true">
+    <header class="hero">
+      <div class="portrait" aria-hidden="true">
         <canvas id="brain-canvas"></canvas>
+        <img class="portrait-img" src="assets/martin-now.jpg" alt="" data-portrait="now">
+        <img class="portrait-img" src="assets/martin-then.jpg" alt="" data-portrait="then">
       </div>
-      <div>
+      <div class="hero-text">
         <h1>Martin</h1>
         <p class="tagline">Hi — this is my corner of the web.</p>
       </div>
@@ -45,40 +49,55 @@
       <p>I tinker with security and AI — usually at the same time. Right now I&rsquo;m building out tooling that puts an LLM at the center of an offensive security workflow.</p>
     </section>
 
-    <section class="reveal">
-      <h2>Now</h2>
-      <p>Cooking on the <strong>seclayer.top</strong> app — a Docker stack with an LLM core and a bunch of modular security-testing components. Iterating on this page in parallel.</p>
-      <span class="now-meta">Last updated May 2026</span>
-    </section>
+    <div class="bento">
+      <section class="reveal">
+        <h2>Now</h2>
+        <p>Cooking on the <strong>seclayer.top</strong> app — a Docker stack with an LLM core and modular security-testing components.</p>
+        <span class="now-meta">Last updated May 2026</span>
+      </section>
+
+      <section class="reveal">
+        <h2>Stack</h2>
+        <ul class="stack">
+          <li>Docker</li>
+          <li>LLMs</li>
+          <li>Python</li>
+          <li>Linux</li>
+          <li>Offensive security</li>
+          <li>Home lab</li>
+        </ul>
+      </section>
+    </div>
 
     <section class="reveal">
-      <h2>Stack</h2>
-      <ul class="stack">
-        <li>Docker</li>
-        <li>LLMs</li>
-        <li>Python</li>
-        <li>Linux</li>
-        <li>Offensive security</li>
-        <li>Home lab</li>
+      <h2>Projects</h2>
+      <ul class="cards">
+        <li class="card">
+          <div class="card-header">
+            <span class="card-title">seclayer (the app)</span>
+            <span class="badge">Cooking</span>
+          </div>
+          <p class="card-desc">A self-hosted, LLM-driven security testing platform. Modular, containerized, runs in my lab.</p>
+        </li>
+        <li class="card">
+          <div class="card-header">
+            <span class="card-title">Personal site</span>
+            <span class="badge">In progress</span>
+          </div>
+          <p class="card-desc">This page. Plain HTML, living favicon, GitHub Pages. Easy to extend.</p>
+        </li>
       </ul>
     </section>
 
     <section class="reveal">
-      <h2>Projects</h2>
-      <ul class="projects">
-        <li class="project">
-          <div class="project-header">
-            <span class="project-title">seclayer (the app)</span>
-            <span class="badge">Cooking</span>
+      <h2>Writeups</h2>
+      <ul class="cards">
+        <li class="card">
+          <div class="card-header">
+            <span class="card-title">Writeups coming soon</span>
+            <span class="badge">WIP</span>
           </div>
-          <p class="project-desc">A self-hosted, LLM-driven security testing platform. Modular, containerized, runs in my lab.</p>
-        </li>
-        <li class="project">
-          <div class="project-header">
-            <span class="project-title">Personal site</span>
-            <span class="badge">In progress</span>
-          </div>
-          <p class="project-desc">This page. Plain HTML, living favicon, GitHub Pages. Easy to extend.</p>
+          <p class="card-desc">Notes from the seclayer build, home-lab tinkering, and whatever else seems worth sharing.</p>
         </li>
       </ul>
     </section>
@@ -104,18 +123,26 @@
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-    const RENDER_SIZE = 128;
-    const canvas = document.getElementById('brain-canvas');
-    canvas.width = RENDER_SIZE;
-    canvas.height = RENDER_SIZE;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const clock = new THREE.Clock();
+    let visible = true;
+    document.addEventListener('visibilitychange', () => {
+      visible = !document.hidden;
+      if (visible) clock.start();
+    });
 
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(RENDER_SIZE, RENDER_SIZE, false);
-    renderer.setClearColor(0x000000, 0);
+    const BRAIN_SIZE = 128;
+    const brainCanvas = document.getElementById('brain-canvas');
+    brainCanvas.width = BRAIN_SIZE;
+    brainCanvas.height = BRAIN_SIZE;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.z = 3;
+    const brainRenderer = new THREE.WebGLRenderer({ canvas: brainCanvas, alpha: true, antialias: true });
+    brainRenderer.setSize(BRAIN_SIZE, BRAIN_SIZE, false);
+    brainRenderer.setClearColor(0x000000, 0);
+
+    const brainScene = new THREE.Scene();
+    const brainCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    brainCamera.position.z = 3;
 
     const starsGeom = new THREE.BufferGeometry();
     const starCount = 80;
@@ -138,7 +165,7 @@
       fragmentShader: `varying float vTwinkle; void main() { vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) discard; float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6); gl_FragColor = vec4(1.0, 0.95, 1.0, a); }`
     });
     const stars = new THREE.Points(starsGeom, starsMat);
-    scene.add(stars);
+    brainScene.add(stars);
 
     const brainGeom = new THREE.IcosahedronGeometry(1, 1);
     const brainMat = new THREE.ShaderMaterial({
@@ -149,7 +176,7 @@
       fragmentShader: `varying vec3 vPos; uniform float time; void main() { float h = 0.5 + 0.5 * sin(time * 1.3 + vPos.x * 2.0 + vPos.y * 1.5); vec3 nebulaA = vec3(0.55, 0.25, 1.00); vec3 nebulaB = vec3(0.20, 0.70, 1.00); vec3 nebulaC = vec3(1.00, 0.40, 0.85); float m = 0.5 + 0.5 * sin(time * 0.7); vec3 col = mix(mix(nebulaA, nebulaB, h), nebulaC, m * 0.6); gl_FragColor = vec4(col, 1.0); }`
     });
     const brain = new THREE.Mesh(brainGeom, brainMat);
-    scene.add(brain);
+    brainScene.add(brain);
 
     const coreGeom = new THREE.IcosahedronGeometry(0.55, 0);
     const coreMat = new THREE.ShaderMaterial({
@@ -160,20 +187,42 @@
       fragmentShader: `varying vec3 vNormal; uniform float time; void main() { float fres = pow(1.0 - max(0.0, vNormal.z), 2.0); vec3 glow = mix(vec3(0.45, 0.20, 0.95), vec3(0.20, 0.55, 1.0), 0.5 + 0.5 * sin(time)); gl_FragColor = vec4(glow, fres * 0.55); }`
     });
     const core = new THREE.Mesh(coreGeom, coreMat);
-    scene.add(core);
+    brainScene.add(core);
 
-    const link = document.getElementById('favicon');
-    const clock = new THREE.Clock();
-    const UPDATE_INTERVAL = 1000 / 15;
-    let lastUpdate = 0;
-    let visible = true;
-    document.addEventListener('visibilitychange', () => {
-      visible = !document.hidden;
-      if (visible) clock.start();
+    const backdrop = document.getElementById('backdrop');
+    const backdropRenderer = new THREE.WebGLRenderer({ canvas: backdrop, antialias: false, alpha: false });
+    backdropRenderer.setClearColor(0x000000, 1);
+
+    const backdropScene = new THREE.Scene();
+    const backdropCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const backdropMat = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        resolution: { value: new THREE.Vector2() }
+      },
+      vertexShader: `void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+      fragmentShader: `precision mediump float; uniform float time; uniform vec2 resolution; float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); } float noise(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(hash(i), hash(i + vec2(1.0,0.0)), f.x), mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), f.x), f.y); } float fbm(vec2 p) { float v = 0.0; float a = 0.5; for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; } return v; } void main() { vec2 uv = gl_FragCoord.xy / resolution.xy; vec2 p = uv * 2.2 + vec2(time * 0.012, time * 0.009); float n = fbm(p); float n2 = fbm(p * 0.6 + time * 0.006); vec3 c1 = vec3(0.18, 0.09, 0.28); vec3 c2 = vec3(0.12, 0.05, 0.38); vec3 c3 = vec3(0.06, 0.10, 0.30); vec3 col = mix(c1, c2, n); col = mix(col, c3, n2 * 0.65); float vignette = 1.0 - 0.4 * length(uv - 0.5); col *= vignette; gl_FragColor = vec4(col * 0.55, 1.0); }`
     });
+    backdropScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), backdropMat));
 
-    function animate(now) {
-      if (!visible) { requestAnimationFrame(animate); return; }
+    function resizeBackdrop() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5) * 0.5;
+      const w = Math.max(1, Math.floor(window.innerWidth * dpr));
+      const h = Math.max(1, Math.floor(window.innerHeight * dpr));
+      backdropRenderer.setSize(w, h, false);
+      backdropMat.uniforms.resolution.value.set(w, h);
+    }
+    resizeBackdrop();
+    window.addEventListener('resize', resizeBackdrop);
+
+    const faviconLink = document.getElementById('favicon');
+    const FAVICON_INTERVAL = 1000 / 15;
+    const BACKDROP_INTERVAL = 1000 / 30;
+    let lastFavicon = 0;
+    let lastBackdrop = 0;
+
+    function tick(now) {
+      if (!visible) { requestAnimationFrame(tick); return; }
       const t = clock.getElapsedTime();
       brainMat.uniforms.time.value = t;
       coreMat.uniforms.time.value = t;
@@ -183,14 +232,27 @@
       core.rotation.y = -t * 0.4;
       core.rotation.z = t * 0.25;
       stars.rotation.y = t * 0.04;
-      renderer.render(scene, camera);
-      if (now - lastUpdate > UPDATE_INTERVAL) {
-        link.href = canvas.toDataURL('image/png');
-        lastUpdate = now;
+      brainRenderer.render(brainScene, brainCamera);
+      if (now - lastFavicon > FAVICON_INTERVAL) {
+        faviconLink.href = brainCanvas.toDataURL('image/png');
+        lastFavicon = now;
       }
-      requestAnimationFrame(animate);
+      if (now - lastBackdrop > BACKDROP_INTERVAL) {
+        backdropMat.uniforms.time.value = t;
+        backdropRenderer.render(backdropScene, backdropCamera);
+        lastBackdrop = now;
+      }
+      requestAnimationFrame(tick);
     }
-    requestAnimationFrame(animate);
+
+    if (reducedMotion) {
+      brainRenderer.render(brainScene, brainCamera);
+      backdropMat.uniforms.time.value = 0;
+      backdropRenderer.render(backdropScene, backdropCamera);
+      faviconLink.href = brainCanvas.toDataURL('image/png');
+    } else {
+      requestAnimationFrame(tick);
+    }
   </script>
 
   <script>
@@ -222,6 +284,31 @@
     } else {
       reveals.forEach((el) => el.classList.add('in-view'));
     }
+
+    const portraitImgs = Array.from(document.querySelectorAll('.portrait-img'));
+    Promise.all(portraitImgs.map((img) =>
+      new Promise((resolve) => {
+        if (img.complete) {
+          resolve(img.naturalWidth > 0 ? img : null);
+        } else {
+          img.addEventListener('load', () => resolve(img), { once: true });
+          img.addEventListener('error', () => resolve(null), { once: true });
+        }
+      })
+    )).then((results) => {
+      const loaded = results.filter(Boolean);
+      if (loaded.length === 0) return;
+      loaded[0].classList.add('active');
+      if (loaded.length < 2) return;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) return;
+      let active = 0;
+      setInterval(() => {
+        loaded[active].classList.remove('active');
+        active = (active + 1) % loaded.length;
+        loaded[active].classList.add('active');
+      }, 6000);
+    });
   </script>
 </body>
 </html>

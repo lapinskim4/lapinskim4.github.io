@@ -9,4 +9,5 @@ exclude = [
   "x\\.com",
   "twitter\\.com",
   "^/",
+  "assets/",
 ]
