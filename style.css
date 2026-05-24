@@ -117,14 +117,31 @@ a { color: var(--accent); }
   background: radial-gradient(circle at 30% 30%, #1a1438 0%, #050010 75%);
   box-shadow: 0 0 32px var(--glow), 0 0 0 1px var(--border);
   cursor: zoom-in;
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s;
   border: none;
   padding: 0;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .cosmic:hover {
   transform: scale(1.03);
   box-shadow: 0 0 44px var(--glow), 0 0 0 1px var(--accent);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.cosmic.entering {
+  opacity: 0;
+  transform: scale(0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cosmic.entering {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .cosmic #brain-canvas {
@@ -165,6 +182,55 @@ h1 {
   font-size: 1.06rem;
   max-width: 32rem;
   letter-spacing: -0.005em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes hero-text-enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero h1 { animation: hero-text-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+  .hero .tagline { animation: hero-text-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both; }
+}
+
+/* Cursor halo: faint themed glow that follows the pointer.
+   Driven by --mx / --my CSS vars from JS. */
+.cursor-halo {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+  background: radial-gradient(
+    circle 340px at var(--mx, 50vw) var(--my, 30vh),
+    rgba(124, 80, 255, 0.10),
+    transparent 70%
+  );
+}
+
+:root[data-theme="light"] .cursor-halo {
+  background: radial-gradient(
+    circle 340px at var(--mx, 50vw) var(--my, 30vh),
+    rgba(122, 59, 255, 0.06),
+    transparent 70%
+  );
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .cursor-halo {
+    background: radial-gradient(
+      circle 340px at var(--mx, 50vw) var(--my, 30vh),
+      rgba(122, 59, 255, 0.06),
+      transparent 70%
+    );
+  }
+}
+
+.cursor-halo.on { opacity: 1; }
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .cursor-halo { display: none; }
 }
 
 section {

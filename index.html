@@ -28,6 +28,7 @@
 </head>
 <body>
   <canvas id="backdrop" class="backdrop" aria-hidden="true"></canvas>
+  <div id="cursor-halo" class="cursor-halo" aria-hidden="true"></div>
 
   <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -41,7 +42,7 @@
 
   <main>
     <header class="hero">
-      <button id="cosmic" class="cosmic" aria-label="Click for fullscreen cosmic view" title="Click for fullscreen">
+      <button id="cosmic" class="cosmic entering" aria-label="Click for fullscreen cosmic view" title="Click for fullscreen">
         <canvas id="brain-canvas" aria-hidden="true"></canvas>
       </button>
       <div>
@@ -281,6 +282,25 @@
     window.addEventListener('scroll', updateScrollTarget, { passive: true });
     window.addEventListener('resize', updateScrollTarget);
 
+    // Page-enter sweep: camera dollies in from far on first load.
+    const SWEEP_MS = 1500;
+    const pageLoadTime = performance.now();
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    function getSweepOffset(now) {
+      const elapsed = now - pageLoadTime;
+      if (elapsed >= SWEEP_MS) return 0;
+      const t = elapsed / SWEEP_MS;
+      return (1 - easeOutCubic(t)) * 4;
+    }
+
+    // Trigger CSS entry animation: remove .entering on the next frame so
+    // the scale + opacity transition fires.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('cosmic').classList.remove('entering');
+      });
+    });
+
     const faviconLink = document.getElementById('favicon');
     const FAVICON_INTERVAL = 1000 / 15;
     const BACKDROP_INTERVAL = 1000 / 30;
@@ -298,7 +318,8 @@
       parX += (targetX - parX) * 0.06;
       parY += (targetY - parY) * 0.06;
       scrollEased += (scrollTarget - scrollEased) * 0.08;
-      brainCamera.position.z = 3 - scrollEased * 0.7;
+      const sweepOffset = getSweepOffset(now);
+      brainCamera.position.z = 3 + sweepOffset - scrollEased * 0.7;
       brainCamera.position.y = -scrollEased * 0.25;
       brainCamera.lookAt(0, 0, 0);
 
@@ -388,6 +409,16 @@
           card.style.transform = '';
         });
       });
+
+      // Cursor halo: faint themed glow following the pointer.
+      const halo = document.getElementById('cursor-halo');
+      const root = document.documentElement;
+      window.addEventListener('mousemove', (e) => {
+        root.style.setProperty('--mx', e.clientX + 'px');
+        root.style.setProperty('--my', e.clientY + 'px');
+        if (!halo.classList.contains('on')) halo.classList.add('on');
+      });
+      window.addEventListener('mouseleave', () => halo.classList.remove('on'));
     }
   </script>
 </body>
