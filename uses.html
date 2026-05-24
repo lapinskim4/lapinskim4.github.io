@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>/uses — Martin</title>
+  <meta name="description" content="The hardware and tools Martin uses day-to-day.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A6</text></svg>">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || t === 'light') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+
+  <main>
+    <header class="page">
+      <div>
+        <h1><a href="./">Martin</a></h1>
+        <p class="tagline">/uses — the rigs and toys.</p>
+      </div>
+    </header>
+
+    <section class="reveal">
+      <h2>Workstations</h2>
+
+      <div class="rig">
+        <div class="rig-name">
+          <h3>soManyCores</h3>
+          <span class="rig-role">Daily driver · ITX</span>
+        </div>
+        <dl class="specs">
+          <dt>CPU</dt><dd>AMD Ryzen 9 3950X (16C / 32T)</dd>
+          <dt>GPU</dt><dd>NVIDIA GeForce RTX 2080 SUPER</dd>
+          <dt>RAM</dt><dd>64 GB</dd>
+          <dt>Motherboard</dt><dd>ASUS ROG STRIX X570-I GAMING</dd>
+          <dt>OS</dt><dd>Windows 11 Pro</dd>
+        </dl>
+      </div>
+
+      <div class="rig">
+        <div class="rig-name">
+          <h3>New build (white)</h3>
+          <span class="rig-role">Workhorse · AM5</span>
+        </div>
+        <dl class="specs">
+          <dt>CPU</dt><dd>AMD Ryzen 9 9950X3D (16-core)</dd>
+          <dt>GPU</dt><dd>ASRock Radeon RX 9070 XT Steel Legend 16 GB</dd>
+          <dt>RAM</dt><dd>Corsair Vengeance RGB DDR5 192 GB (4×48 GB) @ 5200 CL38</dd>
+          <dt>Motherboard</dt><dd>ASRock X870 Steel Legend WiFi 7</dd>
+          <dt>Cooler</dt><dd>Arctic Liquid Freezer III Pro 360 A-RGB</dd>
+          <dt>PSU</dt><dd>ASRock Steel Legend SL-850GW 850 W (ATX 3.1, PCIe 5.1)</dd>
+          <dt>Storage</dt><dd>PNY CS2150 2 TB Gen5 NVMe</dd>
+          <dt>Case</dt><dd>Lian Li O11D EVO RGB dual-chamber</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>Lab &amp; network</h2>
+      <dl class="specs">
+        <dt>AP</dt><dd>Ubiquiti U6+ (WiFi 6, PoE)</dd>
+      </dl>
+    </section>
+
+    <footer class="reveal">
+      <div class="nav">
+        <a href="./">← Back home</a>
+      </div>
+      <div>Hardware list, kept honest.</div>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      let next;
+      if (current === 'dark') next = 'light';
+      else if (current === 'light') next = 'dark';
+      else {
+        const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        next = isLight ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in-view');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      reveals.forEach((el) => io.observe(el));
+    } else {
+      reveals.forEach((el) => el.classList.add('in-view'));
+    }
+  </script>
+</body>
+</html>
