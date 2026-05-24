@@ -4,150 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Martin</title>
-  <meta name="description" content="Personal site of Martin.">
+  <meta name="description" content="Personal site of Martin — security, AI, home-lab tinkering.">
   <link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9C%A6</text></svg>">
-  <style>
-    :root {
-      --bg: #0f1115;
-      --fg: #e7e9ee;
-      --muted: #9aa3b2;
-      --accent: #7cc4ff;
-      --card: #161922;
-      --border: #232838;
-      --badge-bg: rgba(124, 196, 255, 0.15);
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #fafafa;
-        --fg: #14171c;
-        --muted: #5b6472;
-        --accent: #1769c4;
-        --card: #ffffff;
-        --border: #e6e8ee;
-        --badge-bg: rgba(23, 105, 196, 0.12);
-      }
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1.25rem;
-    }
-    main { width: 100%; max-width: 640px; }
-    header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #1a1438 0%, #050010 75%);
-      flex-shrink: 0;
-      overflow: hidden;
-      box-shadow: 0 0 16px rgba(124, 80, 255, 0.25);
-    }
-    #brain-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    h1 { margin: 0; font-size: 1.6rem; letter-spacing: -0.01em; }
-    .tagline { color: var(--muted); margin: 0.15rem 0 0; font-size: 0.95rem; }
-    section {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-    }
-    section h2 {
-      margin: 0 0 0.75rem;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    p { margin: 0.5rem 0; }
-    ul.links {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 0.5rem;
-    }
-    ul.links a {
-      display: block;
-      padding: 0.6rem 0.8rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      color: var(--fg);
-      text-decoration: none;
-      transition: border-color 0.15s, color 0.15s, transform 0.15s;
-    }
-    ul.links a:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-1px);
-    }
-    ul.projects {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 0.6rem;
-    }
-    .project {
-      padding: 0.9rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    .project-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-    .project-title { font-weight: 600; }
-    .badge {
-      font-size: 0.65rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      background: var(--badge-bg);
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .project-desc {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin: 0.35rem 0 0;
-    }
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-top: 1.5rem;
-    }
-    footer a { color: var(--muted); }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || t === 'light') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+
   <main>
-    <header>
+    <header class="page">
       <div class="avatar" aria-hidden="true">
         <canvas id="brain-canvas"></canvas>
       </div>
@@ -157,41 +40,70 @@
       </div>
     </header>
 
-    <section>
+    <section class="reveal">
       <h2>About</h2>
-      <p>I build things on the internet. This page is a starting point — more to come.</p>
+      <p>I tinker with security and AI — usually at the same time. Right now I&rsquo;m building out tooling that puts an LLM at the center of an offensive security workflow.</p>
     </section>
 
-    <section>
+    <section class="reveal">
+      <h2>Now</h2>
+      <p>Cooking on the <strong>seclayer.top</strong> app — a Docker stack with an LLM core and a bunch of modular security-testing components. Iterating on this page in parallel.</p>
+      <span class="now-meta">Last updated May 2026</span>
+    </section>
+
+    <section class="reveal">
+      <h2>Stack</h2>
+      <ul class="stack">
+        <li>Docker</li>
+        <li>LLMs</li>
+        <li>Python</li>
+        <li>Linux</li>
+        <li>Offensive security</li>
+        <li>Home lab</li>
+      </ul>
+    </section>
+
+    <section class="reveal">
       <h2>Projects</h2>
       <ul class="projects">
+        <li class="project">
+          <div class="project-header">
+            <span class="project-title">seclayer (the app)</span>
+            <span class="badge">Cooking</span>
+          </div>
+          <p class="project-desc">A self-hosted, LLM-driven security testing platform. Modular, containerized, runs in my lab.</p>
+        </li>
         <li class="project">
           <div class="project-header">
             <span class="project-title">Personal site</span>
             <span class="badge">In progress</span>
           </div>
-          <p class="project-desc">This page — being iterated on. Custom domain, projects, and a living favicon are on the way.</p>
+          <p class="project-desc">This page. Plain HTML, living favicon, GitHub Pages. Easy to extend.</p>
         </li>
       </ul>
     </section>
 
-    <section>
+    <section class="reveal">
       <h2>Links</h2>
       <ul class="links">
+        <li><a href="mailto:lapinskim@protonmail.ch">Email</a></li>
         <li><a href="https://github.com/lapinskim4" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://x.com/secLayer" target="_blank" rel="noopener">X / @secLayer</a></li>
         <li><a href="https://www.linkedin.com/in/mlapinski/" target="_blank" rel="noopener">LinkedIn</a></li>
       </ul>
     </section>
 
-    <footer>
-      Built with plain HTML &amp; hosted on <a href="https://pages.github.com/">GitHub Pages</a>.
+    <footer class="reveal">
+      <div class="nav">
+        <a href="/uses.html">/uses</a>
+      </div>
+      <div>Built with plain HTML &amp; hosted on <a href="https://pages.github.com/">GitHub Pages</a>.</div>
     </footer>
   </main>
 
   <script type="module">
     import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
-    // Render at 2x the displayed size for crispness on retina displays.
     const RENDER_SIZE = 128;
     const canvas = document.getElementById('brain-canvas');
     canvas.width = RENDER_SIZE;
@@ -205,7 +117,6 @@
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.z = 3;
 
-    // Starfield backdrop
     const starsGeom = new THREE.BufferGeometry();
     const starCount = 80;
     const starPositions = new Float32Array(starCount * 3);
@@ -223,93 +134,37 @@
       uniforms: { time: { value: 0 } },
       transparent: true,
       depthWrite: false,
-      vertexShader: `
-        attribute float phase;
-        uniform float time;
-        varying float vTwinkle;
-        void main() {
-          vTwinkle = 0.5 + 0.5 * sin(time * 2.0 + phase);
-          vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = 1.6 + vTwinkle * 1.4;
-          gl_Position = projectionMatrix * mv;
-        }
-      `,
-      fragmentShader: `
-        varying float vTwinkle;
-        void main() {
-          vec2 c = gl_PointCoord - 0.5;
-          float d = length(c);
-          if (d > 0.5) discard;
-          float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6);
-          gl_FragColor = vec4(1.0, 0.95, 1.0, a);
-        }
-      `
+      vertexShader: `attribute float phase; uniform float time; varying float vTwinkle; void main() { vTwinkle = 0.5 + 0.5 * sin(time * 2.0 + phase); vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = 1.6 + vTwinkle * 1.4; gl_Position = projectionMatrix * mv; }`,
+      fragmentShader: `varying float vTwinkle; void main() { vec2 c = gl_PointCoord - 0.5; float d = length(c); if (d > 0.5) discard; float a = (1.0 - d * 2.0) * (0.4 + vTwinkle * 0.6); gl_FragColor = vec4(1.0, 0.95, 1.0, a); }`
     });
     const stars = new THREE.Points(starsGeom, starsMat);
     scene.add(stars);
 
-    // The "brain" — wireframe icosahedron with cosmic iridescence
     const brainGeom = new THREE.IcosahedronGeometry(1, 1);
     const brainMat = new THREE.ShaderMaterial({
       uniforms: { time: { value: 0 } },
       wireframe: true,
       transparent: true,
-      vertexShader: `
-        varying vec3 vPos;
-        uniform float time;
-        void main() {
-          vPos = position;
-          float pulse = 1.0 + 0.08 * sin(time * 2.5);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position * pulse, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vPos;
-        uniform float time;
-        void main() {
-          float h = 0.5 + 0.5 * sin(time * 1.3 + vPos.x * 2.0 + vPos.y * 1.5);
-          vec3 nebulaA = vec3(0.55, 0.25, 1.00); // violet
-          vec3 nebulaB = vec3(0.20, 0.70, 1.00); // azure
-          vec3 nebulaC = vec3(1.00, 0.40, 0.85); // magenta
-          float m = 0.5 + 0.5 * sin(time * 0.7);
-          vec3 col = mix(mix(nebulaA, nebulaB, h), nebulaC, m * 0.6);
-          gl_FragColor = vec4(col, 1.0);
-        }
-      `
+      vertexShader: `varying vec3 vPos; uniform float time; void main() { vPos = position; float pulse = 1.0 + 0.08 * sin(time * 2.5); gl_Position = projectionMatrix * modelViewMatrix * vec4(position * pulse, 1.0); }`,
+      fragmentShader: `varying vec3 vPos; uniform float time; void main() { float h = 0.5 + 0.5 * sin(time * 1.3 + vPos.x * 2.0 + vPos.y * 1.5); vec3 nebulaA = vec3(0.55, 0.25, 1.00); vec3 nebulaB = vec3(0.20, 0.70, 1.00); vec3 nebulaC = vec3(1.00, 0.40, 0.85); float m = 0.5 + 0.5 * sin(time * 0.7); vec3 col = mix(mix(nebulaA, nebulaB, h), nebulaC, m * 0.6); gl_FragColor = vec4(col, 1.0); }`
     });
     const brain = new THREE.Mesh(brainGeom, brainMat);
     scene.add(brain);
 
-    // Glowing inner core for depth
     const coreGeom = new THREE.IcosahedronGeometry(0.55, 0);
     const coreMat = new THREE.ShaderMaterial({
       uniforms: { time: { value: 0 } },
       transparent: true,
       depthWrite: false,
-      vertexShader: `
-        varying vec3 vNormal;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        uniform float time;
-        void main() {
-          float fres = pow(1.0 - max(0.0, vNormal.z), 2.0);
-          vec3 glow = mix(vec3(0.45, 0.20, 0.95), vec3(0.20, 0.55, 1.0), 0.5 + 0.5 * sin(time));
-          gl_FragColor = vec4(glow, fres * 0.55);
-        }
-      `
+      vertexShader: `varying vec3 vNormal; void main() { vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+      fragmentShader: `varying vec3 vNormal; uniform float time; void main() { float fres = pow(1.0 - max(0.0, vNormal.z), 2.0); vec3 glow = mix(vec3(0.45, 0.20, 0.95), vec3(0.20, 0.55, 1.0), 0.5 + 0.5 * sin(time)); gl_FragColor = vec4(glow, fres * 0.55); }`
     });
     const core = new THREE.Mesh(coreGeom, coreMat);
     scene.add(core);
 
-    // Hook favicon
     const link = document.getElementById('favicon');
     const clock = new THREE.Clock();
-    const UPDATE_INTERVAL = 1000 / 15; // 15 fps for the favicon update
+    const UPDATE_INTERVAL = 1000 / 15;
     let lastUpdate = 0;
     let visible = true;
     document.addEventListener('visibilitychange', () => {
@@ -318,10 +173,7 @@
     });
 
     function animate(now) {
-      if (!visible) {
-        requestAnimationFrame(animate);
-        return;
-      }
+      if (!visible) { requestAnimationFrame(animate); return; }
       const t = clock.getElapsedTime();
       brainMat.uniforms.time.value = t;
       coreMat.uniforms.time.value = t;
@@ -331,9 +183,7 @@
       core.rotation.y = -t * 0.4;
       core.rotation.z = t * 0.25;
       stars.rotation.y = t * 0.04;
-
       renderer.render(scene, camera);
-
       if (now - lastUpdate > UPDATE_INTERVAL) {
         link.href = canvas.toDataURL('image/png');
         lastUpdate = now;
@@ -341,6 +191,37 @@
       requestAnimationFrame(animate);
     }
     requestAnimationFrame(animate);
+  </script>
+
+  <script>
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      let next;
+      if (current === 'dark') next = 'light';
+      else if (current === 'light') next = 'dark';
+      else {
+        const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        next = isLight ? 'dark' : 'light';
+      }
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in-view');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      reveals.forEach((el) => io.observe(el));
+    } else {
+      reveals.forEach((el) => el.classList.add('in-view'));
+    }
   </script>
 </body>
 </html>
