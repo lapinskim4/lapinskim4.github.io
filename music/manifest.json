@@ -1,0 +1,4 @@
+{
+  "_comment": "Source of truth for the music player on the public site. Add a track by appending an entry to `tracks`. Drop the file at the `url` path (e.g. music/whatever.mp3), or paste an absolute URL if you've moved files to a CDN. `duration` is optional — the player reads it from the file metadata if you omit it. `id` must be unique; it stabilises the active-track highlight when the order changes.",
+  "tracks": []
+}

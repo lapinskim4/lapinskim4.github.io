@@ -1,2 +1,12 @@
 node_modules/
 package-lock.json
+
+# Audio files in music/ are opinionated-out of git. Use the manifest pattern:
+# the .json file references them by URL (relative for repo-hosted, absolute
+# for CDN-hosted). Drop tracks locally to test; force-add (git add -f) any
+# you actually want shipped via GitHub Pages. See music/README.md.
+music/*.mp3
+music/*.wav
+music/*.m4a
+music/*.ogg
+music/*.flac
