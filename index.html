@@ -84,7 +84,14 @@
 
     <section class="reveal music" id="music">
       <h2>Music</h2>
-      <div id="music-player" aria-label="Music player"></div>
+      <!--
+        Manifest lives at media.lapinskim4.fyi (Cloudflare R2 + custom
+        domain). To swap to a different host later, change data-manifest
+        only — the player reads this attribute, no JS edit needed.
+      -->
+      <div id="music-player"
+           data-manifest="https://media.lapinskim4.fyi/music/manifest.json"
+           aria-label="Music player"></div>
     </section>
 
     <section class="reveal status">
@@ -660,8 +667,11 @@
         next();
       });
 
-      // Load manifest, then shell+first track.
-      fetch('music/manifest.json', { cache: 'no-store' })
+      // Load manifest, then shell+first track. URL configurable via the
+      // mount element's data-manifest attribute so the player can be pointed
+      // at any host (in-repo stub, R2, future CDN) without a code change.
+      const manifestUrl = mount.dataset.manifest || 'music/manifest.json';
+      fetch(manifestUrl, { cache: 'no-store' })
         .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
         .then((data) => {
           tracks = Array.isArray(data?.tracks) ? data.tracks.filter((t) => t && t.url) : [];
