@@ -184,56 +184,89 @@ h1 {
   letter-spacing: -0.005em;
 }
 
-.hero-titlerow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.85rem, 4vw, 2.5rem);
-  /* .hero is a centered column, so it sizes children to max-content. width:100%
-     forces the row to fill (and be bound by) the column instead, so the text
-     block shrinks and the tagline wraps rather than overflowing. max-width keeps
-     the flags hugging the text on wide screens. */
-  width: 100%;
-  max-width: 36rem;
+/* ----- Identity band: Roots | Flags | Music ----- */
+
+.identity-band {
+  background: transparent;
+  border: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  padding: 0;
 }
 
-.hero-text {
+.band-grid {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .band-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 0.95fr 1.1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+}
+
+.band-col {
+  background: var(--card-overlay);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
   min-width: 0;
 }
 
-.flag {
-  height: 34px;
-  width: auto;
-  flex-shrink: 0;
-  display: block;
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+.mascots {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
-.flag-anim {
-  flex-shrink: 0;
-  display: block;
-  /* No border/shadow frame here — the cloth has its own depth from shading. */
+.mascot-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
 }
 
-:root[data-theme="light"] .flag { border-color: rgba(0, 0, 0, 0.14); }
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .flag { border-color: rgba(0, 0, 0, 0.14); }
+/* Uniform tiles so the three mismatched logos (transparent / white-bg, square /
+   wide) read as one set: same box, contained (no distortion), light backing. */
+.mascot-tile img {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 5px;
 }
 
-@media (max-width: 600px) {
-  .flag { height: 22px; }
-  .hero-titlerow { gap: 0.55rem; }
-  /* Title can't wrap (no spaces), so it sets the row's min-content floor.
-     Pin a deterministic step-down here (no vw — it resolves unreliably at this
-     width) so title + both flags clear the viewport down to ~360px. */
-  .hero h1 { font-size: 2rem; }
+.mascot-tile span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-width: 0;
+}
+
+.flag-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flag-stage-canvas { display: block; }
+
+/* Music inside the band: drop the player's own card frame so the band-col is
+   the only border (avoids a card-in-card). */
+.band-music .music-player {
+  border: none;
+  background: transparent;
+  padding: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {
