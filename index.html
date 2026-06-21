@@ -58,13 +58,16 @@
             <rect y="9.23" width="19" height="0.77"/>
           </g>
           <rect width="7.6" height="5.38" fill="#3c3b6e"/>
-          <g fill="#ffffff">
-            <circle cx="1" cy="0.9" r="0.3"/><circle cx="2.5" cy="0.9" r="0.3"/><circle cx="4" cy="0.9" r="0.3"/><circle cx="5.5" cy="0.9" r="0.3"/><circle cx="6.8" cy="0.9" r="0.3"/>
-            <circle cx="1.75" cy="1.8" r="0.3"/><circle cx="3.25" cy="1.8" r="0.3"/><circle cx="4.75" cy="1.8" r="0.3"/><circle cx="6.15" cy="1.8" r="0.3"/>
-            <circle cx="1" cy="2.7" r="0.3"/><circle cx="2.5" cy="2.7" r="0.3"/><circle cx="4" cy="2.7" r="0.3"/><circle cx="5.5" cy="2.7" r="0.3"/><circle cx="6.8" cy="2.7" r="0.3"/>
-            <circle cx="1.75" cy="3.6" r="0.3"/><circle cx="3.25" cy="3.6" r="0.3"/><circle cx="4.75" cy="3.6" r="0.3"/><circle cx="6.15" cy="3.6" r="0.3"/>
-            <circle cx="1" cy="4.5" r="0.3"/><circle cx="2.5" cy="4.5" r="0.3"/><circle cx="4" cy="4.5" r="0.3"/><circle cx="5.5" cy="4.5" r="0.3"/><circle cx="6.8" cy="4.5" r="0.3"/>
-          </g>
+          <defs><path id="us-star" fill="#ffffff" d="M0,-0.2 L0.045,-0.062 L0.19,-0.062 L0.073,0.024 L0.118,0.162 L0,0.076 L-0.118,0.162 L-0.073,0.024 L-0.19,-0.062 L-0.045,-0.062 Z"/></defs>
+          <use href="#us-star" x="0.55" y="0.5"/><use href="#us-star" x="1.85" y="0.5"/><use href="#us-star" x="3.15" y="0.5"/><use href="#us-star" x="4.45" y="0.5"/><use href="#us-star" x="5.75" y="0.5"/><use href="#us-star" x="7.05" y="0.5"/>
+          <use href="#us-star" x="1.2" y="1.047"/><use href="#us-star" x="2.5" y="1.047"/><use href="#us-star" x="3.8" y="1.047"/><use href="#us-star" x="5.1" y="1.047"/><use href="#us-star" x="6.4" y="1.047"/>
+          <use href="#us-star" x="0.55" y="1.595"/><use href="#us-star" x="1.85" y="1.595"/><use href="#us-star" x="3.15" y="1.595"/><use href="#us-star" x="4.45" y="1.595"/><use href="#us-star" x="5.75" y="1.595"/><use href="#us-star" x="7.05" y="1.595"/>
+          <use href="#us-star" x="1.2" y="2.143"/><use href="#us-star" x="2.5" y="2.143"/><use href="#us-star" x="3.8" y="2.143"/><use href="#us-star" x="5.1" y="2.143"/><use href="#us-star" x="6.4" y="2.143"/>
+          <use href="#us-star" x="0.55" y="2.69"/><use href="#us-star" x="1.85" y="2.69"/><use href="#us-star" x="3.15" y="2.69"/><use href="#us-star" x="4.45" y="2.69"/><use href="#us-star" x="5.75" y="2.69"/><use href="#us-star" x="7.05" y="2.69"/>
+          <use href="#us-star" x="1.2" y="3.237"/><use href="#us-star" x="2.5" y="3.237"/><use href="#us-star" x="3.8" y="3.237"/><use href="#us-star" x="5.1" y="3.237"/><use href="#us-star" x="6.4" y="3.237"/>
+          <use href="#us-star" x="0.55" y="3.785"/><use href="#us-star" x="1.85" y="3.785"/><use href="#us-star" x="3.15" y="3.785"/><use href="#us-star" x="4.45" y="3.785"/><use href="#us-star" x="5.75" y="3.785"/><use href="#us-star" x="7.05" y="3.785"/>
+          <use href="#us-star" x="1.2" y="4.332"/><use href="#us-star" x="2.5" y="4.332"/><use href="#us-star" x="3.8" y="4.332"/><use href="#us-star" x="5.1" y="4.332"/><use href="#us-star" x="6.4" y="4.332"/>
+          <use href="#us-star" x="0.55" y="4.88"/><use href="#us-star" x="1.85" y="4.88"/><use href="#us-star" x="3.15" y="4.88"/><use href="#us-star" x="4.45" y="4.88"/><use href="#us-star" x="5.75" y="4.88"/><use href="#us-star" x="7.05" y="4.88"/>
         </svg>
         <div class="hero-text">
           <h1>lapinskim4</h1>
@@ -725,6 +728,141 @@
           mount.innerHTML = `<p class="music-empty">Couldn’t load the playlist (${err.message}).</p>`;
         });
     })();
+  </script>
+
+  <script type="module">
+    // ---------- Living flags ----------
+    // Each hero flag is upgraded from a static SVG to a WebGL waving cloth:
+    // the flag is painted onto a 2D canvas (real 5-point stars), used as a
+    // texture on a subdivided plane, and a vertex shader runs a travelling
+    // wave pinned at the pole edge. Progressive enhancement — if WebGL or
+    // three.js is unavailable, or the user prefers reduced motion, the crisp
+    // SVG stays.
+    import * as THREE from 'three';
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function star(ctx, cx, cy, R) {
+      const r = R * 0.382;
+      ctx.beginPath();
+      for (let k = 0; k < 5; k++) {
+        const ao = (-90 + k * 72) * Math.PI / 180;
+        const ai = (-90 + 36 + k * 72) * Math.PI / 180;
+        const ox = cx + R * Math.cos(ao), oy = cy + R * Math.sin(ao);
+        const ix = cx + r * Math.cos(ai), iy = cy + r * Math.sin(ai);
+        k === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
+        ctx.lineTo(ix, iy);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function paintUS(c) {
+      const W = c.width, H = c.height, ctx = c.getContext('2d');
+      const sh = H / 13;
+      for (let i = 0; i < 13; i++) { ctx.fillStyle = i % 2 === 0 ? '#b22234' : '#ffffff'; ctx.fillRect(0, Math.floor(i * sh), W, Math.ceil(sh) + 1); }
+      const cw = W * 0.4, ch = sh * 7;
+      ctx.fillStyle = '#3c3b6e'; ctx.fillRect(0, 0, cw, ch);
+      ctx.fillStyle = '#ffffff';
+      const cols = 11, rows = 9, R = Math.min(cw / cols, ch / rows) * 0.45;
+      const x0 = cw * 0.072, x1 = cw * 0.928, y0 = ch * 0.093, y1 = ch * 0.907;
+      for (let rr = 0; rr < rows; rr++) for (let cc = 0; cc < cols; cc++) {
+        if ((cc + rr) % 2) continue;
+        star(ctx, x0 + cc * (x1 - x0) / (cols - 1), y0 + rr * (y1 - y0) / (rows - 1), R);
+      }
+    }
+
+    function paintPL(c) {
+      const W = c.width, H = c.height, ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H / 2);
+      ctx.fillStyle = '#d4213d'; ctx.fillRect(0, H / 2, W, H - H / 2);
+    }
+
+    const VERT = `
+      uniform float uTime;
+      varying vec2 vUv; varying float vShade;
+      void main() {
+        vUv = uv;
+        vec3 p = position;
+        float edge = uv.x;                 // 0 at pole (left), 1 at free edge
+        float w = sin(p.x * 5.0 + uTime * 2.6) * 0.05
+                + sin(p.x * 9.0 - uTime * 1.7) * 0.022;
+        p.z += w * edge * 1.7;
+        p.y += w * edge * 0.45;
+        vShade = 1.0 + cos(p.x * 5.0 + uTime * 2.6) * edge * 0.33;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }`;
+    const FRAG = `
+      uniform sampler2D uTex;
+      varying vec2 vUv; varying float vShade;
+      void main() {
+        vec4 t = texture2D(uTex, vUv);
+        gl_FragColor = vec4(t.rgb * clamp(vShade, 0.72, 1.22), t.a);
+      }`;
+
+    function liveFlag(svg, paint) {
+      const aspect = svg.viewBox.baseVal.width / svg.viewBox.baseVal.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      const tex = document.createElement('canvas');
+      tex.width = 420; tex.height = Math.round(420 / aspect);
+      paint(tex);
+      const texture = new THREE.CanvasTexture(tex);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'flag-anim';
+      canvas.setAttribute('aria-hidden', 'true');
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(dpr);
+
+      const scene = new THREE.Scene();
+      // Slight margin in the frustum so the wave never clips at the edges.
+      const cam = new THREE.OrthographicCamera(-aspect / 2 * 1.06, aspect / 2 * 1.06, 0.56, -0.56, 0.1, 10);
+      cam.position.z = 2;
+      const geo = new THREE.PlaneGeometry(aspect, 1, 52, 30);
+      const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uTex: { value: texture } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true });
+      scene.add(new THREE.Mesh(geo, mat));
+
+      function resize() {
+        const h = window.matchMedia('(max-width: 600px)').matches ? 22 : 34;
+        const w = Math.round(h * aspect);
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        renderer.setSize(w, h, false);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      svg.style.display = 'none';
+      svg.parentNode.insertBefore(canvas, svg.nextSibling);
+
+      const clock = new THREE.Clock();
+      let running = true;
+      function frame() {
+        if (!running) return;
+        mat.uniforms.uTime.value += clock.getDelta();
+        renderer.render(scene, cam);
+        requestAnimationFrame(frame);
+      }
+      document.addEventListener('visibilitychange', () => {
+        running = !document.hidden;
+        if (running) { clock.getDelta(); frame(); }
+      });
+      frame();
+    }
+
+    if (!reduceMotion) {
+      try {
+        const us = document.querySelector('.flag-us');
+        const pl = document.querySelector('.flag-pl');
+        if (us) liveFlag(us, paintUS);
+        if (pl) liveFlag(pl, paintPL);
+      } catch (e) {
+        console.warn('flag animation unavailable, keeping static SVG', e);
+      }
+    }
   </script>
 </body>
 </html>

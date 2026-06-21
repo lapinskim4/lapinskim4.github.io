@@ -215,6 +215,12 @@ h1 {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
+.flag-anim {
+  flex-shrink: 0;
+  display: block;
+  /* No border/shadow frame here — the cloth has its own depth from shading. */
+}
+
 :root[data-theme="light"] .flag { border-color: rgba(0, 0, 0, 0.14); }
 
 @media (prefers-color-scheme: light) {
