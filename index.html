@@ -650,7 +650,10 @@
         durationEl.textContent = fmtTime(d);
         scrubEl.max = d;
       });
-      audio.addEventListener('ended', () => next());
+      // Replay/continuous loop: when a track finishes, always advance and play
+      // the next one. select() wraps via modulo, so the playlist loops forever
+      // (and with a single track, it replays that track).
+      audio.addEventListener('ended', () => select(currentIdx + 1, true));
       audio.addEventListener('play', () => {
         isPlaying = true;
         playBtn.innerHTML = ICONS.pause;
@@ -676,7 +679,21 @@
         .then((data) => {
           tracks = Array.isArray(data?.tracks) ? data.tracks.filter((t) => t && t.url) : [];
           const built = buildShell();
-          if (built) loadCurrent();
+          if (built) {
+            loadCurrent();
+            // Autoplay the first track. Browsers block audio autoplay without a
+            // prior user gesture, so if play() is rejected, arm a one-shot
+            // listener that starts playback on the visitor's first interaction.
+            audio.play().catch(() => {
+              const kick = () => {
+                audio.play().catch(() => {});
+                window.removeEventListener('pointerdown', kick);
+                window.removeEventListener('keydown', kick);
+              };
+              window.addEventListener('pointerdown', kick);
+              window.addEventListener('keydown', kick);
+            });
+          }
         })
         .catch((err) => {
           mount.innerHTML = `<p class="music-empty">Couldn’t load the playlist (${err.message}).</p>`;
