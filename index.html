@@ -82,41 +82,16 @@
       </ul>
     </section>
 
-    <section class="reveal identity-band" id="roots">
-      <div class="band-grid">
-        <div class="band-col">
-          <h2>Roots</h2>
-          <ul class="mascots">
-            <li class="mascot-tile">
-              <img src="assets/identity/depaul-demon.jpg" alt="DePaul Blue Demons" loading="lazy">
-              <span>DePaul Blue Demons</span>
-            </li>
-            <li class="mascot-tile">
-              <img src="assets/identity/secdaemons.webp" alt="SecDaemons" loading="lazy">
-              <span>SecDaemons</span>
-            </li>
-            <li class="mascot-tile">
-              <img src="assets/identity/moraine-cyclone.webp" alt="Moraine Valley Cyclones" loading="lazy">
-              <span>Moraine Valley Cyclones</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="band-col">
-          <h2>Flags</h2>
-          <!-- 2x2 waving grid: US over Chicago, Poland over Białystok. All four
-               share one wind (upper-left) via a single render loop. US/PL are
-               painted procedurally; Chicago/Białystok load from image. -->
-          <div class="flag-stage" aria-label="United States and Chicago, Poland and Białystok flags, waving"></div>
-        </div>
-
-        <div class="band-col band-music">
-          <h2>Music</h2>
-          <div id="music-player"
-               data-manifest="https://media.lapinskim4.fyi/music/manifest.json"
-               aria-label="Music player"></div>
-        </div>
-      </div>
+    <section class="reveal music" id="music">
+      <h2>Music</h2>
+      <!--
+        Manifest lives at media.lapinskim4.fyi (Cloudflare R2 + custom
+        domain). To swap to a different host later, change data-manifest
+        only — the player reads this attribute, no JS edit needed.
+      -->
+      <div id="music-player"
+           data-manifest="https://media.lapinskim4.fyi/music/manifest.json"
+           aria-label="Music player"></div>
     </section>
 
     <section class="reveal status">
@@ -724,170 +699,6 @@
           mount.innerHTML = `<p class="music-empty">Couldn’t load the playlist (${err.message}).</p>`;
         });
     })();
-  </script>
-
-  <script type="module">
-    // ---------- Living flags ----------
-    // The 2x2 flag grid (US / Chicago, Poland / Białystok) renders as WebGL
-    // waving cloth: each flag is painted onto a canvas (US/PL procedurally with
-    // real stars; Chicago/Białystok from an image), textured onto a subdivided
-    // plane, and displaced by a shared-wind vertex shader. One render loop drives
-    // all four from a single clock so they billow together. Reduced motion / no
-    // WebGL falls back to a single still frame (or a static <img> on load error).
-    import * as THREE from 'three';
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function star(ctx, cx, cy, R) {
-      const r = R * 0.382;
-      ctx.beginPath();
-      for (let k = 0; k < 5; k++) {
-        const ao = (-90 + k * 72) * Math.PI / 180;
-        const ai = (-90 + 36 + k * 72) * Math.PI / 180;
-        const ox = cx + R * Math.cos(ao), oy = cy + R * Math.sin(ao);
-        const ix = cx + r * Math.cos(ai), iy = cy + r * Math.sin(ai);
-        k === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
-        ctx.lineTo(ix, iy);
-      }
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    function paintUS(c) {
-      const W = c.width, H = c.height, ctx = c.getContext('2d');
-      const sh = H / 13;
-      for (let i = 0; i < 13; i++) { ctx.fillStyle = i % 2 === 0 ? '#b22234' : '#ffffff'; ctx.fillRect(0, Math.floor(i * sh), W, Math.ceil(sh) + 1); }
-      const cw = W * 0.4, ch = sh * 7;
-      ctx.fillStyle = '#3c3b6e'; ctx.fillRect(0, 0, cw, ch);
-      ctx.fillStyle = '#ffffff';
-      const cols = 11, rows = 9, R = Math.min(cw / cols, ch / rows) * 0.45;
-      const x0 = cw * 0.072, x1 = cw * 0.928, y0 = ch * 0.093, y1 = ch * 0.907;
-      for (let rr = 0; rr < rows; rr++) for (let cc = 0; cc < cols; cc++) {
-        if ((cc + rr) % 2) continue;
-        star(ctx, x0 + cc * (x1 - x0) / (cols - 1), y0 + rr * (y1 - y0) / (rows - 1), R);
-      }
-    }
-
-    function paintPL(c) {
-      const W = c.width, H = c.height, ctx = c.getContext('2d');
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H / 2);
-      ctx.fillStyle = '#d4213d'; ctx.fillRect(0, H / 2, W, H - H / 2);
-    }
-
-    // Shared wind: the phase mixes x and -y so the wave front is tilted, and a
-    // single render loop drives every flag from one clock — so all four billow
-    // together as if one gust comes in from the upper-left.
-    const VERT = `
-      uniform float uTime;
-      varying vec2 vUv; varying float vShade;
-      void main() {
-        vUv = uv;
-        vec3 p = position;
-        float fly = uv.x;                 // 0 at hoist (left), 1 at fly edge
-        float drop = 1.0 - uv.y;          // 0 at top, 1 at bottom
-        float amp = (fly * fly * 0.6 + fly * 0.12) * (0.82 + drop * 0.3);
-        float dir = p.x * 3.2 - p.y * 1.5;          // wind from upper-left
-        float ph1 = dir - uTime * 3.0;
-        float ph2 = dir * 2.0 - uTime * 4.4;
-        float z = (sin(ph1) * 0.07 + sin(ph2) * 0.03) * amp;
-        p.z += z;
-        p.x -= abs(z) * 0.4;              // foreshortens toward the pole
-        p.y += sin(ph1) * 0.02 * amp;     // slight vertical sway
-        float slope = (cos(ph1) * 3.2 * 0.07 + cos(ph2) * 6.4 * 0.03) * amp;
-        vShade = 1.0 + slope * 0.55;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-      }`;
-    const FRAG = `
-      uniform sampler2D uTex;
-      varying vec2 vUv; varying float vShade;
-      void main() {
-        vec4 t = texture2D(uTex, vUv);
-        gl_FragColor = vec4(t.rgb * clamp(vShade, 0.72, 1.22), t.a);
-      }`;
-
-    // col/row place each flag in the 2x2: US/Chicago left, PL/Białystok right.
-    const FLAGS = [
-      { aspect: 19 / 10,     col: 0, row: 0, paint: paintUS },
-      { aspect: 16 / 10,     col: 1, row: 0, paint: paintPL },
-      { aspect: 1920 / 1280, col: 0, row: 1, img: 'assets/identity/chicago-flag.png' },
-      { aspect: 960 / 605,   col: 1, row: 1, img: 'assets/identity/bialystok-flag.png' },
-    ];
-
-    // Build a flag texture — procedural (US/PL) or from an image (Chicago/Białystok).
-    function makeTexture(def, onReady) {
-      const tex = document.createElement('canvas');
-      tex.width = 1024; tex.height = Math.round(1024 / def.aspect);
-      if (def.paint) { def.paint(tex); onReady(new THREE.CanvasTexture(tex)); return; }
-      const img = new Image();
-      img.onload = () => { tex.getContext('2d').drawImage(img, 0, 0, tex.width, tex.height); onReady(new THREE.CanvasTexture(tex)); };
-      img.onerror = () => onReady(null);
-      img.src = def.img;
-    }
-
-    // One canvas / one WebGL context for all four flags — a single scene with
-    // four meshes in a 2x2, one camera, one clock. Cheap, and the shared scene
-    // makes the synchronized wind automatic.
-    function initFlagGrid(stage) {
-      const cellW = 2.15, cellH = 1.34;          // per-flag cell (flag is 1 tall)
-      const frustW = cellW * 2, frustH = cellH * 2;
-      const aspect = frustW / frustH;
-
-      const canvas = document.createElement('canvas');
-      canvas.className = 'flag-stage-canvas';
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      const maxAniso = renderer.capabilities.getMaxAnisotropy();
-      const scene = new THREE.Scene();
-      const cam = new THREE.OrthographicCamera(-frustW / 2, frustW / 2, frustH / 2, -frustH / 2, 0.1, 10);
-      cam.position.z = 2;
-
-      const mats = [];
-      function addFlag(def, texture) {
-        texture.minFilter = THREE.LinearMipmapLinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        texture.generateMipmaps = true;
-        texture.anisotropy = maxAniso;
-        const geo = new THREE.PlaneGeometry(def.aspect, 1, 72, 44);
-        const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uTex: { value: texture } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true });
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(def.col === 0 ? -cellW / 2 : cellW / 2, def.row === 0 ? cellH / 2 : -cellH / 2, 0);
-        scene.add(mesh);
-        mats.push(mat);
-        renderer.render(scene, cam);   // paint now — also covers reduced-motion
-      }
-      for (const def of FLAGS) makeTexture(def, (tex) => { if (tex) addFlag(def, tex); });
-
-      function resize() {
-        const h = window.matchMedia('(max-width: 600px)').matches ? 104 : 124;
-        const w = Math.round(h * aspect);
-        canvas.style.width = w + 'px';
-        canvas.style.height = h + 'px';
-        renderer.setPixelRatio(Math.min((window.devicePixelRatio || 1) * 2, 4));
-        renderer.setSize(w, h, false);
-        renderer.render(scene, cam);
-      }
-      resize();
-      window.addEventListener('resize', resize);
-      stage.appendChild(canvas);
-
-      let running = true;
-      const t0 = performance.now();
-      function tick() {
-        if (!running) return;
-        const t = (performance.now() - t0) / 1000;
-        for (const m of mats) m.uniforms.uTime.value = t;
-        renderer.render(scene, cam);
-        requestAnimationFrame(tick);
-      }
-      document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) tick(); });
-      if (!reduceMotion) tick();
-    }
-
-    try {
-      const stage = document.querySelector('.flag-stage');
-      if (stage) initFlagGrid(stage);
-    } catch (e) {
-      console.warn('flag animation unavailable', e);
-    }
   </script>
 </body>
 </html>
