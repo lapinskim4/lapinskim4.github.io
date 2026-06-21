@@ -784,12 +784,21 @@
       void main() {
         vUv = uv;
         vec3 p = position;
-        float edge = uv.x;                 // 0 at pole (left), 1 at free edge
-        float w = sin(p.x * 5.0 + uTime * 2.6) * 0.05
-                + sin(p.x * 9.0 - uTime * 1.7) * 0.022;
-        p.z += w * edge * 1.7;
-        p.y += w * edge * 0.45;
-        vShade = 1.0 + cos(p.x * 5.0 + uTime * 2.6) * edge * 0.33;
+        float fly = uv.x;                          // 0 at hoist (pole), 1 at fly
+        float amp = fly * fly * 0.7 + fly * 0.12;  // grows toward the fly, eased
+        float t = uTime;
+        // Two waves travelling hoist -> fly. The p.y terms shift the phase up
+        // the height so top and bottom edges ripple out of sync — the cloth
+        // twists and snaps rather than bobbing as one flat sheet.
+        float ph1 = p.x * 3.4 - t * 3.0 + p.y * 1.7;
+        float ph2 = p.x * 6.8 - t * 4.4 - p.y * 2.6;
+        float z = (sin(ph1) * 0.07 + sin(ph2) * 0.03) * amp;
+        p.z += z;
+        p.x -= abs(z) * 0.45;                       // foreshortens toward pole
+        p.y += sin(ph1) * 0.025 * amp;             // slight vertical sway
+        // Light catches the folds: shade from the surface slope (d z / d x).
+        float slope = (cos(ph1) * 3.4 * 0.07 + cos(ph2) * 6.8 * 0.03) * amp;
+        vShade = 1.0 + slope * 0.6;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
       }`;
     const FRAG = `
@@ -805,31 +814,36 @@
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       const tex = document.createElement('canvas');
-      tex.width = 420; tex.height = Math.round(420 / aspect);
+      tex.width = 1024; tex.height = Math.round(1024 / aspect);
       paint(tex);
       const texture = new THREE.CanvasTexture(tex);
-      texture.minFilter = THREE.LinearFilter;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
       texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = true;
 
       const canvas = document.createElement('canvas');
       canvas.className = 'flag-anim';
       canvas.setAttribute('aria-hidden', 'true');
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(dpr);
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      // Resolve the backing buffer relative to current pixel density; resize()
+      // re-applies this so the flag stays crisp when the page is zoomed.
+      const pr = () => Math.min((window.devicePixelRatio || 1) * 2, 4);
 
       const scene = new THREE.Scene();
-      // Slight margin in the frustum so the wave never clips at the edges.
-      const cam = new THREE.OrthographicCamera(-aspect / 2 * 1.06, aspect / 2 * 1.06, 0.56, -0.56, 0.1, 10);
+      // Margin in the frustum so the wave / foreshorten never clips at the edges.
+      const cam = new THREE.OrthographicCamera(-aspect / 2 * 1.08, aspect / 2 * 1.08, 0.58, -0.58, 0.1, 10);
       cam.position.z = 2;
-      const geo = new THREE.PlaneGeometry(aspect, 1, 52, 30);
+      const geo = new THREE.PlaneGeometry(aspect, 1, 96, 56);
       const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uTex: { value: texture } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true });
       scene.add(new THREE.Mesh(geo, mat));
 
       function resize() {
-        const h = window.matchMedia('(max-width: 600px)').matches ? 22 : 34;
+        const h = window.matchMedia('(max-width: 600px)').matches ? 22 : 38;
         const w = Math.round(h * aspect);
         canvas.style.width = w + 'px';
         canvas.style.height = h + 'px';
+        renderer.setPixelRatio(pr());
         renderer.setSize(w, h, false);
       }
       resize();
