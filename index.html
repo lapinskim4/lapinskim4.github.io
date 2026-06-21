@@ -51,90 +51,53 @@
       </div>
     </header>
 
-    <div class="pillars">
-      <aside class="pillar pillar-left">
-        <section class="reveal roots">
-          <h2>Roots</h2>
-          <ul class="identity">
-            <li class="identity-card">
-              <img src="assets/identity/depaul-demon.jpg" alt="DePaul Blue Demons mascot" loading="lazy">
-              <div class="identity-meta">
-                <span class="identity-name">DePaul University</span>
-                <span class="identity-sub">Blue Demons &middot; alma mater</span>
+    <section class="reveal">
+      <h2>Projects</h2>
+      <ul class="cards">
+        <li class="card">
+          <div class="card-row">
+            <div class="card-glyph" aria-hidden="true"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">lapinskim4.github.io</span>
+                <span class="badge">Live</span>
               </div>
-            </li>
-            <li class="identity-card">
-              <img src="assets/identity/secdaemons.webp" alt="SecDaemons emblem" loading="lazy">
-              <div class="identity-meta">
-                <span class="identity-name">SecDaemons</span>
-                <span class="identity-sub">DePaul cybersecurity team</span>
+              <p class="card-desc">The source of this site. Vanilla HTML/CSS, three.js, GitHub Pages. Fork it for your own landing.</p>
+              <a class="card-link" href="https://github.com/lapinskim4/lapinskim4.github.io" target="_blank" rel="noopener">View source &rarr;</a>
+            </div>
+          </div>
+        </li>
+        <li class="card">
+          <div class="card-row">
+            <div class="card-glyph" data-hue="muted" aria-hidden="true"></div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-title">More on the way</span>
+                <span class="badge badge-muted">Soon</span>
               </div>
-            </li>
-            <li class="identity-card">
-              <img src="assets/identity/chicago-coa.png" alt="Coat of arms of Chicago" loading="lazy">
-              <div class="identity-meta">
-                <span class="identity-name">Chicago</span>
-                <span class="identity-sub">where I live</span>
-              </div>
-            </li>
-            <li class="identity-card">
-              <img src="assets/identity/bialystok-coa.svg" alt="Coat of arms of Bia&#322;ystok" loading="lazy">
-              <div class="identity-meta">
-                <span class="identity-name">Bia&#322;ystok</span>
-                <span class="identity-sub">where I hail from &middot; Lapa</span>
-              </div>
-            </li>
-          </ul>
-        </section>
-      </aside>
+              <p class="card-desc">Security tooling and small experiments. Public releases land here as they happen.</p>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </section>
 
-      <div class="pillar pillar-middle">
-        <section class="reveal">
-          <h2>Projects</h2>
-          <ul class="cards">
-            <li class="card">
-              <div class="card-row">
-                <div class="card-glyph" aria-hidden="true"></div>
-                <div class="card-body">
-                  <div class="card-header">
-                    <span class="card-title">lapinskim4.github.io</span>
-                    <span class="badge">Live</span>
-                  </div>
-                  <p class="card-desc">The source of this site. Vanilla HTML/CSS, three.js, GitHub Pages. Fork it for your own landing.</p>
-                  <a class="card-link" href="https://github.com/lapinskim4/lapinskim4.github.io" target="_blank" rel="noopener">View source &rarr;</a>
-                </div>
-              </div>
-            </li>
-            <li class="card">
-              <div class="card-row">
-                <div class="card-glyph" data-hue="muted" aria-hidden="true"></div>
-                <div class="card-body">
-                  <div class="card-header">
-                    <span class="card-title">More on the way</span>
-                    <span class="badge badge-muted">Soon</span>
-                  </div>
-                  <p class="card-desc">Security tooling and small experiments. Public releases land here as they happen.</p>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </section>
+    <section class="reveal music" id="music">
+      <h2>Music</h2>
+      <!--
+        Manifest lives at media.lapinskim4.fyi (Cloudflare R2 + custom
+        domain). To swap to a different host later, change data-manifest
+        only — the player reads this attribute, no JS edit needed.
+      -->
+      <div id="music-player"
+           data-manifest="https://media.lapinskim4.fyi/music/manifest.json"
+           aria-label="Music player"></div>
+    </section>
 
-        <section class="reveal status">
-          <h2>Currently</h2>
-          <p>Heads-down on a private security project. Public stuff lands here when it&rsquo;s ready to leave the workbench.</p>
-        </section>
-      </div>
-
-      <aside class="pillar pillar-right">
-        <section class="reveal music" id="music">
-          <h2>Music</h2>
-          <div id="music-player"
-               data-manifest="https://media.lapinskim4.fyi/music/manifest.json"
-               aria-label="Music player"></div>
-        </section>
-      </aside>
-    </div>
+    <section class="reveal status">
+      <h2>Currently</h2>
+      <p>Heads-down on a private security project. Public stuff lands here when it&rsquo;s ready to leave the workbench.</p>
+    </section>
 
     <footer class="reveal">
       <div><a href="https://github.com/lapinskim4" target="_blank" rel="noopener">github.com/lapinskim4</a></div>
@@ -496,44 +459,27 @@
         return `${m}:${s}`;
       };
 
+      // ICON svgs match the rest of the site's stroke aesthetic.
       const ICONS = {
         prev: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg>',
         next: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>',
         play: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
         pause: '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
-        shuffle: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>',
-        repeat: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
-        repeatOne: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><text x="9.5" y="15" font-size="7" font-weight="700" fill="currentColor" stroke="none">1</text></svg>',
       };
-
-      const readPref = (k, fb) => { try { const v = localStorage.getItem(k); return v === null ? fb : v; } catch { return fb; } };
-      const writePref = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
 
       let tracks = [];
       let currentIdx = 0;
       let isPlaying = false;
       let isScrubbing = false;
-      let shuffle = readPref('player-shuffle', '0') === '1';
-      let repeat = readPref('player-repeat', 'all');
-      if (!['off','all','one'].includes(repeat)) repeat = 'all';
-      let autoplay = readPref('player-autoplay', '1') === '1';
-      let shuffleQueue = [];
-      let shufflePos = 0;
 
+      // The actual audio element — never in the DOM, we hold a ref to it.
       const audio = new Audio();
       audio.preload = 'metadata';
 
-      let scrubEl, currentEl, durationEl, playBtn, titleEl, listEl;
-      let shuffleBtn, repeatBtn, autoplayBtn;
-
-      function rebuildShuffleQueue() {
-        shuffleQueue = tracks.map((_, i) => i);
-        for (let i = shuffleQueue.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffleQueue[i], shuffleQueue[j]] = [shuffleQueue[j], shuffleQueue[i]];
-        }
-        shufflePos = Math.max(0, shuffleQueue.indexOf(currentIdx));
-      }
+      // Render the entire player. Called once after manifest loads, then
+      // re-renders only update the dynamic regions to avoid focus loss on
+      // every tick (we patch DOM, not re-mount).
+      let scrubEl, currentEl, durationEl, playBtn, titleEl, listEl, gradientStyleEl;
 
       function buildShell() {
         mount.innerHTML = '';
@@ -557,17 +503,12 @@
               <span class="music-time" id="music-duration"></span>
             </div>
             <div class="music-controls">
-              <button type="button" class="music-btn music-btn-aux" id="music-shuffle" aria-label="Shuffle" aria-pressed="false">${ICONS.shuffle}</button>
               <button type="button" class="music-btn" id="music-prev" aria-label="Previous track">${ICONS.prev}</button>
               <button type="button" class="music-btn music-btn-primary" id="music-play" aria-label="Play">${ICONS.play}</button>
               <button type="button" class="music-btn" id="music-next" aria-label="Next track">${ICONS.next}</button>
-              <button type="button" class="music-btn music-btn-aux" id="music-repeat" aria-label="Repeat: all">${ICONS.repeat}</button>
             </div>
             <ol class="music-list" id="music-list"></ol>
-            <div class="music-footer">
-              <button type="button" class="music-pill" id="music-autoplay" aria-pressed="true">autoplay: on</button>
-              <p class="music-caption">Space &middot; &larr; &rarr; &middot; &uarr; &darr;</p>
-            </div>
+            <p class="music-caption">Space play/pause · ← → seek · ↑ ↓ track</p>
           </div>
         `;
 
@@ -577,29 +518,10 @@
         durationEl = mount.querySelector('#music-duration');
         playBtn = mount.querySelector('#music-play');
         listEl = mount.querySelector('#music-list');
-        shuffleBtn = mount.querySelector('#music-shuffle');
-        repeatBtn = mount.querySelector('#music-repeat');
-        autoplayBtn = mount.querySelector('#music-autoplay');
 
         mount.querySelector('#music-prev').addEventListener('click', () => prev());
         mount.querySelector('#music-next').addEventListener('click', () => next());
         playBtn.addEventListener('click', () => toggle());
-        shuffleBtn.addEventListener('click', () => {
-          shuffle = !shuffle;
-          writePref('player-shuffle', shuffle ? '1' : '0');
-          if (shuffle) rebuildShuffleQueue();
-          renderControlStates();
-        });
-        repeatBtn.addEventListener('click', () => {
-          repeat = repeat === 'off' ? 'all' : repeat === 'all' ? 'one' : 'off';
-          writePref('player-repeat', repeat);
-          renderControlStates();
-        });
-        autoplayBtn.addEventListener('click', () => {
-          autoplay = !autoplay;
-          writePref('player-autoplay', autoplay ? '1' : '0');
-          renderControlStates();
-        });
 
         scrubEl.addEventListener('input', (e) => {
           isScrubbing = true;
@@ -614,8 +536,8 @@
         });
 
         renderTrackList();
-        renderControlStates();
 
+        // Keyboard shortcuts scoped to the player container.
         const root = mount.querySelector('.music-player');
         root.addEventListener('keydown', (e) => {
           if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
@@ -634,23 +556,6 @@
         });
 
         return true;
-      }
-
-      function renderControlStates() {
-        if (shuffleBtn) {
-          shuffleBtn.classList.toggle('is-active', shuffle);
-          shuffleBtn.setAttribute('aria-pressed', shuffle ? 'true' : 'false');
-        }
-        if (repeatBtn) {
-          repeatBtn.classList.toggle('is-active', repeat !== 'off');
-          repeatBtn.innerHTML = repeat === 'one' ? ICONS.repeatOne : ICONS.repeat;
-          repeatBtn.setAttribute('aria-label', 'Repeat: ' + repeat);
-        }
-        if (autoplayBtn) {
-          autoplayBtn.classList.toggle('is-active', autoplay);
-          autoplayBtn.setAttribute('aria-pressed', autoplay ? 'true' : 'false');
-          autoplayBtn.textContent = 'autoplay: ' + (autoplay ? 'on' : 'off');
-        }
       }
 
       function renderTrackList() {
@@ -698,7 +603,9 @@
             isPlaying = true;
             playBtn.innerHTML = ICONS.pause;
             playBtn.setAttribute('aria-label', 'Pause');
-          }).catch(() => { isPlaying = false; });
+          }).catch(() => {
+            isPlaying = false;
+          });
         } else {
           audio.pause();
         }
@@ -706,12 +613,9 @@
 
       function select(idx, andPlay) {
         currentIdx = ((idx % tracks.length) + tracks.length) % tracks.length;
-        if (shuffle) {
-          const pos = shuffleQueue.indexOf(currentIdx);
-          if (pos >= 0) shufflePos = pos;
-        }
         loadCurrent();
         if (andPlay) {
+          // Browser autoplay policies: user clicked a track button → allowed.
           audio.play().then(() => {
             isPlaying = true;
             playBtn.innerHTML = ICONS.pause;
@@ -720,44 +624,16 @@
         }
       }
 
-      function nextIdx() {
-        if (shuffle && shuffleQueue.length) {
-          shufflePos = (shufflePos + 1) % shuffleQueue.length;
-          return shuffleQueue[shufflePos];
+      function prev() { select(currentIdx - 1, isPlaying); }
+      function next() { select(currentIdx + 1, isPlaying); }
+
+      function seek(t) {
+        if (Number.isFinite(t)) {
+          audio.currentTime = t;
         }
-        return (currentIdx + 1) % tracks.length;
-      }
-      function prevIdx() {
-        if (shuffle && shuffleQueue.length) {
-          shufflePos = (shufflePos - 1 + shuffleQueue.length) % shuffleQueue.length;
-          return shuffleQueue[shufflePos];
-        }
-        return (currentIdx - 1 + tracks.length) % tracks.length;
       }
 
-      // `fromEnded` is only true when the audio element fires its `ended` event.
-      // Repeat-one replays the current track; repeat-off stops at the last track.
-      // Manual next() always advances and wraps.
-      function next(fromEnded) {
-        if (fromEnded) {
-          if (repeat === 'one') {
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
-            return;
-          }
-          if (repeat === 'off') {
-            const isLast = shuffle
-              ? shufflePos === shuffleQueue.length - 1
-              : currentIdx === tracks.length - 1;
-            if (isLast) return;
-          }
-        }
-        select(nextIdx(), true);
-      }
-      function prev() { select(prevIdx(), isPlaying); }
-
-      function seek(t) { if (Number.isFinite(t)) audio.currentTime = t; }
-
+      // Audio event wiring (added once, fires regardless of current track).
       audio.addEventListener('timeupdate', () => {
         if (isScrubbing || !scrubEl) return;
         currentEl.textContent = fmtTime(audio.currentTime);
@@ -774,7 +650,10 @@
         durationEl.textContent = fmtTime(d);
         scrubEl.max = d;
       });
-      audio.addEventListener('ended', () => next(true));
+      // Replay/continuous loop: when a track finishes, always advance and play
+      // the next one. select() wraps via modulo, so the playlist loops forever
+      // (and with a single track, it replays that track).
+      audio.addEventListener('ended', () => select(currentIdx + 1, true));
       audio.addEventListener('play', () => {
         isPlaying = true;
         playBtn.innerHTML = ICONS.pause;
@@ -786,30 +665,34 @@
         playBtn.setAttribute('aria-label', 'Play');
       });
       audio.addEventListener('error', () => {
+        // Skip a 404'd or broken track rather than dying silently.
         console.warn('music: track failed, skipping', tracks[currentIdx]?.url);
         next();
       });
 
+      // Load manifest, then shell+first track. URL configurable via the
+      // mount element's data-manifest attribute so the player can be pointed
+      // at any host (in-repo stub, R2, future CDN) without a code change.
       const manifestUrl = mount.dataset.manifest || 'music/manifest.json';
       fetch(manifestUrl, { cache: 'no-store' })
         .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
         .then((data) => {
           tracks = Array.isArray(data?.tracks) ? data.tracks.filter((t) => t && t.url) : [];
-          if (shuffle) rebuildShuffleQueue();
           const built = buildShell();
           if (built) {
             loadCurrent();
-            if (autoplay) {
-              audio.play().catch(() => {
-                const kick = () => {
-                  audio.play().catch(() => {});
-                  window.removeEventListener('pointerdown', kick);
-                  window.removeEventListener('keydown', kick);
-                };
-                window.addEventListener('pointerdown', kick);
-                window.addEventListener('keydown', kick);
-              });
-            }
+            // Autoplay the first track. Browsers block audio autoplay without a
+            // prior user gesture, so if play() is rejected, arm a one-shot
+            // listener that starts playback on the visitor's first interaction.
+            audio.play().catch(() => {
+              const kick = () => {
+                audio.play().catch(() => {});
+                window.removeEventListener('pointerdown', kick);
+                window.removeEventListener('keydown', kick);
+              };
+              window.addEventListener('pointerdown', kick);
+              window.addEventListener('keydown', kick);
+            });
           }
         })
         .catch((err) => {
